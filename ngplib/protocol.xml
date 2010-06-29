@@ -1,0 +1,3886 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- 
+    UP TO DATE STATUS
+    ==================
+
+     tex revision referers to change set id of
+     ssh://hg//home/is/hg/mc2/docs/Design/navserver_prot.tex
+
+    possible specification check status for elements below
+-->
+<!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+<!-- here is an optional comment about what is wrong/unclear --> 
+
+<!-- NOT CHECKED WITH .TEX -->
+
+<!-- absence of status means that check towards tex-documentation and/or
+     server is done and no errors were found (or the errors corrected)
+
+     all new data added to this file is assumed to be correct! -->
+
+<!-- =============================================================== -->
+<!--
+    WARNINGS:
+
+        1) Don't break comment attributes over several lines - it looks like
+        crap in the generated code.
+
+        2) comment elements can be broken up - the line breaks will be
+        preserved but leading and trailing WS will be removed.
+
+        3) Only one comment element per packet is supported and only the
+	first one will be included in generated code.
+-->
+<!--
+    TODO:
+
+        1) For params: Do we need both name and description? The shortname is
+        used as member variable name and the variable definition gets the
+        description and the name ends up in the @return doc-tag for the getter.
+
+        But users should really only look at the getter documentation so
+        it seems wrong to keep the lengthy description at the member
+        variable. Suggestion: skip the name attribute. /JT
+
+
+        2) description attribute should be changed into a sub element, like
+        comment in order to handle long comments with line breaks gracefully.
+
+        3) Descriptions together with structs instead of the param in which
+        they are sent.
+
+        4) Allowed size ("type") in bytes of an enum should be specified in
+        the enum instead of the struct member carrying the value.
+
+	5) The following reqPacket's are missing in action:
+	NAV_CELLID_LOOKUP_REQ
+	NAV_CELLID_LOOKUP_REPLY
+	NAV_VERIFY_THIRD_PARTY_TRANSACTION_REQ
+	NAV_VERIFY_THIRD_PARTY_TRANSACTION_REPLY
+	NAV_GET_KEYED_DATA_REQ
+	NAV_GET_KEYED_DATA_REPLY
+
+-->
+
+<!-- =============================================================== -->
+<serverFormat>
+  <!-- Common data for all packet types -->
+  
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- is this NGP version or version of this file or something
+       else? -->
+  <!-- The global version of all the packets. -->
+  <version value="10"/>
+
+  <!-- Enumeration for packet base -->
+  <globalEnums>
+    <enum name="PacketTypeEnum" comment="Enum describing the packet types">
+      <enumVal name="NAV_INVALID" value="0x00"/>
+
+      <enumComment value="0x01 - 0x04 Reserved (Used in older protovers)"/>
+
+      <enumVal name="NAV_ROUTE_REQ" value="0x05"/>
+      <enumVal name="NAV_ROUTE_REPLY" value="0x06"/>
+
+      <enumVal name="NAV_SEARCH_REQ" value="0x07"/>
+      <enumVal name="NAV_SEARCH_REPLY" value="0x08" />
+
+      <enumComment value="0x09 - 0x0a Reserved (Used in older protovers)"/>
+
+      <enumVal name="NAV_REV_GEOCODING_REQ" value="0x0b" />
+      <enumVal name="NAV_REV_GEOCODING_REPLY" value="0x0c" />
+
+      <enumComment value="0x0d - 0x0e Reserved (Used in older protovers)"/>
+      <enumComment value="0x10 - 0x11 Reserved (Used in older protovers)"/>
+
+      <enumVal name="NAV_MAP_REQ" value="0x12" />
+      <enumVal name="NAV_MAP_REPLY" value="0x13" />
+
+      <enumVal name="NAV_FAV_REQ" value="0x14" />
+      <enumVal name="NAV_FAV_REPLY" value="0x15" />
+
+      <enumVal name="NAV_INFO_REQ" value="0x16" />
+      <enumVal name="NAV_INFO_REPLY" value="0x17" />
+
+      <enumVal name="NAV_MESSAGE_REQ" value="0x18" />
+      <enumVal name="NAV_MESSAGE_REPLY" value="0x19" />
+
+      <enumVal name="NAV_UPGRADE_REQ" value="0x1a" />
+      <enumVal name="NAV_UPGRADE_REPLY" value="0x1b" />
+
+      <enumVal name="NAV_VECTOR_MAP_REQ" value="0x1c" />
+      <enumVal name="NAV_VECTOR_MAP_REPLY" value="0x1d" />
+
+      <enumVal name="NAV_MULTI_VECTOR_MAP_REQ" value="0x1e" />
+      <enumVal name="NAV_MULTI_VECTOR_MAP_REPLY" value="0x1f" />
+
+      <enumComment value="0x20,0x21,0x30-0x33,0x40,0x41 Reserved (Used in older
+			  protovers)"/>
+
+      <enumVal name="NAV_CELL_REPORT" value="0x22" />
+      <enumVal name="NAV_CELL_CONFIRM" value="0x23" />
+
+      <enumVal name="NAV_TOP_REGION_REQ" value="0x25" />
+      <enumVal name="NAV_TOP_REGION_REPLY" value="0x26" />
+      <enumVal name="NAV_LATEST_NEWS_REQ" value="0x27" />
+      <enumVal name="NAV_LATEST_NEWS_REPLY" value="0x28" />
+      <enumVal name="NAV_CATEGORIES_REQ" value="0x29" />
+      <enumVal name="NAV_CATEGORIES_REPLY" value="0x2a" />
+      <enumVal name="NAV_CALLCENTER_LIST_REQ" value="0x2b" />
+      <enumVal name="NAV_CALLCENTER_LIST_REPLY" value="0x2c" />
+      <enumVal name="NAV_SERVER_LIST_REQ" value="0x2d" />
+      <enumVal name="NAV_SERVER_LIST_REPLY" value="0x2e" />
+      <enumVal name="NAV_NEW_PASSWORD_REQ" value="0x2f" />
+      <enumVal name="NAV_NEW_PASSWORD_REPLY" value="0x30" />
+      <enumVal name="NAV_SERVER_INFO_REQ" value="0x31" />
+      <enumVal name="NAV_SERVER_INFO_REPLY" value="0x32" />
+      <enumVal name="NAV_WHOAMI_REQ" value="0x33" />
+      <enumVal name="NAV_WHOAMI_REPLY" value="0x34" />
+
+      <enumVal name="NAV_BINARY_TRANSFER_REQ" value="0x35" />
+      <enumVal name="NAV_BINARY_TRANSFER_REPLY" value="0x36" />
+      <enumVal name="NAV_NOP_REQ" value="0x37" />
+      <enumVal name="NAV_NOP_REPLY" value="0x38" />
+      <enumVal name="NAV_CHANGED_LICENCE_REQ" value="0x39" />
+      <enumVal name="NAV_CHANGED_LICENCE_REPLY" value="0x3a" />
+      <enumVal name="NAV_SERVER_AUTH_BOB_REQ" value="0x3b" />
+      <enumVal name="NAV_SERVER_AUTH_BOB_REPLY" value="0x3c" />
+
+      <enumVal name="NAV_TRACK_REQ" value="0x3d" />
+      <enumVal name="NAV_TRACK_REPLY" value="0x3e" />
+
+      <enumVal name="NAV_TUNNEL_DATA_REQ" value="0x42" />
+      <enumVal name="NAV_TUNNEL_DATA_REPLY" value="0x43" />
+
+      <!-- /* The following are tunneled through Nav2 */ -->
+      <enumVal name="NAV_COMBINED_SEARCH_REQ" value="0x44" />
+      <enumVal name="NAV_COMBINED_SEARCH_REPLY" value="0x45" />
+      <enumVal name="NAV_SEARCH_DESC_REQ" value="0x46"/>
+      <enumVal name="NAV_SEARCH_DESC_REPLY" value="0x47"/>
+
+      <enumVal name="NAV_CELLID_LOOKUP_REQ" value="0x48" />
+      <enumVal name="NAV_CELLID_LOOKUP_REPLY" value="0x49" />
+      
+      <enumVal name="NAV_GET_KEYED_DATA_REQ" value="0x4a" />
+      <enumVal name="NAV_GET_KEYED_DATA_REPLY" value="0x4b" />
+
+         <!-- /* Special req that is only echoed back to the requester */ -->
+      <enumVal name="NAV_ECHO_REQ" value="0x4c"/>
+      <enumVal name="NAV_ECHO_REPLY" value="0x4d"/>
+
+      <enumVal name="NAV_VERIFY_THIRD_PARTY_TRANSACTION_REQ" value="0x4e"/>
+      <enumVal name="NAV_VERIFY_THIRD_PARTY_TRANSACTION_REPLY" value="0x4f"/>
+
+      <enumVal name="NAV_LOCAL_CATEGORY_TREE_REQ" value="0x50"/>
+      <enumVal name="NAV_LOCAL_CATEGORY_TREE_REPLY" value="0x51"/>
+
+      <enumVal name="NAV_ONE_SEARCH_REQ" value="0x52"/>
+      <enumVal name="NAV_ONE_SEARCH_REPLY" value="0x53"/>
+
+     <enumVal name="NAV_DETAIL_REQ" value="0x54"/>
+     <enumVal name="NAV_DETAIL_REPLY" value="0x55"/>
+    </enum>  
+  </globalEnums>
+
+  <!-- Common data for request packet type -->
+  <reqPacketBase>
+
+  </reqPacketBase>
+
+  <!-- Common data for reply packet type -->
+  <globalEnums>
+    <enum name="ReplyStatusEnum">
+      <enumVal name="NAV_STATUS_OK" value="0x00"/>
+      <enumVal name="NAV_STATUS_NOT_OK" value="0x01"/>
+      <enumVal name="NAV_STATUS_REQUEST_TIMEOUT" value="0x02"/>
+      <enumVal name="NAV_STATUS_PARAM_REQ_NOT_FIRST" value="0x03"/>
+      <enumVal name="NAV_STATUS_OUTSIDE_MAP" value="0x04"/>
+      <enumVal name="NAV_STATUS_PROTOVER_NOT_SUPPORTED" value="0x05"/>
+      <enumVal name="NAV_STATUS_OUTSIDE_ALLOWED_AREA" value="0x06"/>
+      <enumVal name="NAV_STATUS_NO_TRANSACTIONS_LEFT" value="0x07"/>
+      <enumVal name="NAV_STATUS_GENERIC_PERMANENT_ERROR" value="0x08"/>
+      <enumVal name="NAV_STATUS_GENERIC_TEMPORARY_ERROR" value="0x09"/>
+      <enumVal name="NAV_STATUS_SERVER_UPGRADE_IN_PROGRESS" value="0x0a"/>
+      <enumVal name="NAV_STATUS_SERVER_OVERLOADED" value="0x0b"/>
+      <enumVal name="NAV_STATUS_EXPIRED_USER" value="0x0c"/>
+      <enumVal name="NAV_STATUS_UNAUTHORIZED_USER" value="0x0d"/>
+      <enumVal name="NAV_STATUS_REDIRECT" value="0x0e"/>
+      <enumVal name="NAV_STATUS_UPDATE_NEEDED" value="0x0f"/>
+      <enumVal name="NAV_STATUS_WF_TYPE_TOO_HIGH_LOW" value="0x10"/>
+      <enumVal name="NAV_STATUS_REQ_VER_NOT_SUPPORTED" value="0x11"/>
+      <enumVal name="NAV_STATUS_CRC_ERROR" value="0x12"/>
+      <enumVal name="NAV_STATUS_PARAMBLOCK_INVALID" value="0x13"/>
+      <enumVal name="NAV_STATUS_UNKNOWN_REQUEST" value="0x14"/>
+      <enumVal name="NAV_STATUS_PARAMETER_INVALID" value="0x15"/>
+      <enumVal name="NAV_STATUS_MISSING_PARAMETER" value="0x16"/>
+      <enumVal name="NAV_STATUS_UNAUTH_OTHER_HAS_LICENCE" value="0x17"/>
+      <enumVal name="NAV_STATUS_EXTENDED_ERROR" value="0x18"
+               comment="says that there is an Extended error parameter, id 24, in the reply with a larger error code."/>
+      <enumVal name="NAV_STATUS_REQUEST_SPECIFIC_MASK" value="0x80"
+               comment="This is not a status code but a mask to see if a status code is request specific."/>
+    </enum>
+
+  </globalEnums>
+
+  <!-- Structures that are shared between objects -->
+  <globalStructs>
+    <!-- This is now a real struct in templates since we need to override
+         it for CC.
+
+    <struct name="Coordinate">
+      <member name="lat" type="int32"/>
+      <member name="lon" type="int32"/>
+    </struct>
+    -->
+
+    <struct name="BoundingBox">
+      <member name="upperLeft" type="Coordinate"/><!-- int32: lat, lon -->
+      <member name="lowerRight" type="Coordinate"/><!-- int32: lat, lon -->
+    </struct>
+
+    <struct name="CoordinateAndAngle">
+      <member name="lat" type="int32"/>
+      <member name="lon" type="int32"/>
+      <member name="angle" type="uint16"/>
+    </struct>
+
+    <!-- Convenience structure for data types with a starting index and a size. -->
+    <struct name="IndexAndCount">
+      <member name="index" type="uint16"/>
+      <member name="count" type="uint16"/>
+    </struct>
+
+    <struct name="PixelDimensions">
+      <member name="width" type="uint16"/>
+      <member name="height" type="uint16"/>
+    </struct>
+
+    <struct name="MeterDimensions">
+      <member name="width" type="uint32"/>
+      <member name="height" type="uint32"/>
+    </struct>
+
+    <struct name="StringPair">
+      <member name="first" type="string"/>
+      <member name="second" type="string"/>
+    </struct>
+  </globalStructs>
+
+  <!-- These are parameters that can be part of any packet. -->
+  <globalParams>
+    <struct name="VersionSetting">
+      <member name="majorVersion" type="uint32"/>
+      <member name="minorVersion" type="uint32"/>
+      <member name="relVersion" type="uint32"/>
+    </struct>
+    
+    <!-- NOT CHECKED WITH .TEX -->
+    <struct name="SubscriptionSetting">
+      <enum name="SubscriptionEnum">
+	<enumVal name="TRIAL" value="0x0" comment="Trial"/>
+	<enumVal name="SILVER" value="0x1" comment="WMMG"/>
+	<enumVal name="GOLD" value="0x2" comment="WMN"/>
+      </enum>
+
+      <member name="subscription" enum="SubscriptionEnum" type="uint8"/>
+    </struct>
+
+    <!-- NOT CHECKED WITH .TEX (params 0 .. 10, 12, 23, 25 .. 32)-->
+    <!-- Parameters that can be potentially shared for all items. -->
+    <param id="0" 
+	   name="NullParam" 
+	   shortname="nullParam" 
+	   type="empty" 
+	   defaultVal="-"
+	   description="The empty param."/>
+    <param id="1" 
+	   name="User ID" 
+	   shortname="uid" 
+	   type="string" 
+	   defaultVal="-"
+	   description="This string parameter is the user's login or user's
+			UIN. Used when client doesn't know which it is."/>
+    <param id="2" 
+	   name="User Password" 
+	   shortname="userPassword" 
+	   type="string" 
+	   defaultVal="-"
+	   description="This string parameter is the user's password."/>
+    <param id="3" 
+	   name="User Licence (key)" 
+	   shortname="userLicenceKey" 
+	   type="byte[]" 
+	   defaultVal="-"
+	   description="This binary parameter is the user's licence key."/>
+    <param id="4" 
+	   name="Client type" 
+	   shortname="clientType" 
+	   type="string" 
+	   defaultVal="-"
+	   description="Information about client type like &quot;Navigator&quot;, 
+			&quot;PocketPC&quot; or &quot;Symbian&quot; as a string. 
+			See Client type specification."/>
+    <param id="5" 
+	   name="Client type options" 
+	   shortname="clientTypeOptions" 
+	   type="string" 
+	   defaultVal="-"
+	   description="Information such as processor type and or device type,
+			iPAQARM, Nokia7650, as a string. More client type options may be added
+			after a comma sign (','). See Client type specification."/>
+    <param id="6" 
+	   name="Language of client" 
+	   shortname="clientLanguage" 
+	   type="uint16" 
+	   enum="LanguageCodeEnum"
+	   defaultVal="-"
+	   description="Language of the client. Should always be sent as it
+			affects almost every request. See Section \ref{languageCode} for languages."/>
+    <param id="7" 
+	   name="Wayfinder Subscription Type" 
+	   shortname="subscrType" 
+	   type="SubscriptionSetting" 
+	   defaultVal="-"
+	   description="Byte parameter sent from client to server and from 
+			server to client containing the Wayfinder Subscription Type the client 
+			think it is and what Subscription Type the server
+			think the client is."
+	   />
+    <param id="8" 
+	   name="User Login" 
+	   shortname="userLogin" 
+	   type="string" 
+	   defaultVal="-"
+	   description="This string parameter is the user's login. Used 
+			together with User Password to authenticate user."/>
+    <param id="9" 
+	   name="User UIN" 
+	   shortname="uin" 
+	   type="string" 
+	   defaultVal="-"
+	   description="This string parameter is the user's UIN."/>
+    <param id="10" 
+	   name="Retry time" 
+	   shortname="retryTime" 
+	   type="uint32" 
+	   defaultVal="5 "
+	   description="This is the time in seconds until the client should 
+			retry contacting the server. Sent from server if it doesn't want to 
+			handle the request immediately. Usually with a status code like 
+			NAV_STATUS_SERVER_OVERLOADED or NAV_STATUS_SERVER_UPGRADE_IN_PROGRESS}."/>
+    <param id="11" 
+	   name="Program version" 
+	   shortname="programVersion" 
+	   type="VersionSetting" 
+	   defaultVal="-"
+	   description="The program version of the client."/>
+    <param id="12" 
+	   name="Transactions left " 
+	   shortname="transactionsLeft " 
+	   type="uint32" 
+	   defaultVal="-"
+	   description="Uint32 parameter sent from the server to the client 
+			detailing how many transactions are left before the user has to buy new ones.
+			Only sent if appropriate.
+			The two MSBs are the type of transactions.
+			MSB 00: Transactions. A search, map, or oute is a transaction.
+			MSB 01: Reserved for future use.
+			MSB 10: Transaction Days left. How many 24h days of
+			usage left. 
+			MSB 11: Reserved for future use. "
+	   />
+    <param id="13" 
+	   name="Transactions Day Start" 
+	   shortname="transactionsStart" 
+	   type="uint32" 
+	   defaultVal="-"
+	   description="Uint32 parameter with the UTC time of when the 
+			current Transactions Day started."/>
+    <param id="14" 
+	   name="SessionKey" 
+	   shortname="sessionKey" 
+	   type="string" 
+	   defaultVal="-"
+	   description="String with the sessionKey for the current connection to
+			the server. Sent from server on requests from client without it. Client can
+			use it on resued connection to server instead of normal authentication.
+			"/>
+    <param id="15" 
+	   name="Upload files " 
+	   shortname="uploadFiles " 
+	   type="string" 
+	   defaultVal="-"
+	   description="String with files that the client should upload to 
+			server."/>
+    <param id="16" 
+	   name="Uploaded files " 
+	   shortname="uploadedFiles " 
+	   type="uint8[]" 
+	   defaultVal="-"
+	   description="Byte array with the files uploaded format: 
+			([filename string] : [length in decimal string] : [length bytes data])+."/>
+    <param id="17" 
+	   name="Old user Licence" 
+	   shortname="oldUserLicence" 
+	   type="uint8[]" 
+	   defaultVal="-"
+	   description="The prevoius value that the client has moved from."/>
+    <param id="18" 
+	   name="Days left " 
+	   shortname="daysLeft " 
+	   type="uint16" 
+	   defaultVal="-"
+	   description="Uint16 parameter sent from the server to the client 
+			detailing how many days left for user's account."/>
+    <param id="19" 
+	   name="Server Auth Bob" 
+	   shortname="serverAuthBob" 
+	   type="uint8[]" 
+	   defaultVal="-"
+	   description="This binary parameter is a authentication binary
+			object that the server has set in the client and
+			only the server can understand. Client should
+			send it to secondary servers to authenticate
+			itself."/>
+    <param id="20" 
+	   name="Server Auth Bob Checksum" 
+	   shortname="serverAuthBobChecksum" 
+	   type="uint32" 
+	   defaultVal="-"
+	   description="Checksum for Server Auth Bob."/>
+
+    <param id="21" 
+	   name="Rights bitfield" 
+	   shortname="rightsBitfield" 
+	   type="uint32[]" 
+	   defaultVal="-"
+	   description="Array of uint32s with the right bit for the user."/>
+    <param id="22" 
+	   name="Resource version" 
+	   shortname="resourceVersion" 
+	   type="VersionSetting" 
+	   defaultVal="-"
+	   description="The resource version of the client."/>
+    <param id="23" 
+	   name="New version" 
+	   shortname="newVersion" 
+	   type="string" 
+	   defaultVal="-"
+	   description="The latest program, resource and MLFW version.
+			Sent as a string with  
+			ProgramVersion ':' ResourceVersion ':' MLFWVersion. 
+			Where ProgramVersion and ResourceVersion are formatted:
+			[1-9][0-9]* '.' [1-9][0-9]* '.' [1-9][0-9]*.
+			ResourceVersion has same format as ProgramVersion.
+			MLFWVersion is a single number.
+
+                        Deprecated. Not used for client version upgrades 2010. See instead NAV_SERVER_INFO_REPLY v.4, param 4308, 4309.
+			"/>
+
+    <param id="24" 
+	   name="Earth extended error" 
+	   shortname="earthExtendedError" 
+	   type="uint32" 
+	   enum="ExtendedErrorCode"
+	   defaultVal="-"
+	   description="If the status of the packet is NAV_STATUS_EXTENDED_ERROR}, 
+			this parameter contains the extended enum of Earth-specific errros."/>
+    <param id="25" 
+	   name="UTC time" 
+	   shortname="utcTime" 
+	   type="uint32" 
+	   defaultVal="-"
+	   description="The UTC time in the server."/>
+    <param id="26" 
+	   name="External url" 
+	   shortname="externalUrl" 
+	   type="string" 
+	   defaultVal="-"
+	   description="If the status of the packet is {\tt
+			NAV\_STATUS\_EXTENDED\_ERROR}, this parameter contains the
+			external URL. This URL is sent to Content Window in client.
+			Please note that this is a string. So do not change it in client!"/>
+    <param id="27" 
+	   name="Latest News Id" 
+	   shortname="latestNewsId" 
+	   type="string" 
+	   defaultVal="-"
+	   description="String with the server provided latest news id.
+			Compared to last value in client and client
+			goes to latest news page if not same or if 
+			parameter is empty. Deprecated."/>
+    <param id="28" 
+	   name="Search desc CRC" 
+	   shortname="searchDescCrc" 
+	   type="string" 
+	   defaultVal="-"
+	   description="The crc of the search description. See combined search."/>
+
+    <param id="29" 
+	   name="User Licence (key) Type" 
+	   shortname="userLicenceKeyType" 
+	   type="string" 
+	   defaultVal="-"
+	   description="The user licence key's type, paramID 3. Valid types are:
+			&quot;imei&quot;, &quot;btmac&quot;, &quot;bbpin&quot;, &quot;imsi&quot;, 
+			&quot;fingal\_id&quot;, &quot;esn&quot;, &quot;phone\_msisdn&quot; or &quot;customer\_msisdn&quot;. 
+			If this parameter is not present &quot;imei&quot; is assumed."/>
+    <param id="30" 
+	   name="Old User Licence (key) Type" 
+	   shortname="oldUserLicenceKeyType" 
+	   type="string" 
+	   defaultVal="-"
+	   description="The old user licence key's type, paramID 17. Same values
+			as paramID 29.
+			"/>
+    <param id="31" 
+	   name="Phone Property Key" 
+	   shortname="phonePropertyKey" 
+	   type="string" 
+	   defaultVal="-"
+	   description="A phone property name. Is paired together with 
+			the same index value in paramID 32."/>
+    <param id="32" 
+	   name="Phone Property Value" 
+	   shortname="phonePropertyValue" 
+	   type="string" 
+	   defaultVal="-"
+	   description="A phone property value. Is paired together with 
+			the same index key in paramID 31."/>
+
+    <!-- ============================================================= -->
+    <param id="1000" 
+           name="Origin coord and angle." 
+           shortname="origCoordAndAngle" 
+	   type="CoordinateAndAngle"
+	   defaultVal="-"
+	   description="Array of two int32 and an uint16. Origin coordinate and
+			angle. Angle is direction of vehicle at the moment. Is used to calculate
+			which side of the road the vehicle is traveling."
+	   />
+
+    <!-- global because it is also used in NAV_SERVER_INFO_REPLY -->
+    <param id="4903" 
+	   name="Favorites CRC" 
+	   shortname="favoritesCrc" 
+	   type="string" 
+	   defaultVal="- "
+	   description="String that is the crc for the favorites. It is not specified how the crc is calculated and the client should not try to calculate the crc of its favorites. Rather, it should compare this crc with its stored value to determine if favorites has been changed on the server."/>
+
+    <!-- global because used in NAV_TRACK_REQ, NAV_SERVER_INFO_REPLY -->
+    <param id="5204" 
+	   name="PINCRC" 
+	   shortname="pinCrc" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The CRC for the PINs."/>
+  </globalParams>
+  
+  <!-- These are the global enums. -->
+  <globalEnums>
+      <!-- serverparams.tex revision a84044588d31 -->
+      <enum name="LanguageCodeEnum">
+         <enumVal name="ENGLISH" value="0"/>
+         <enumVal name="SWEDISH" value="1"/>
+         <enumVal name="GERMAN" value="2"/>
+         <enumVal name="DANISH" value="3"/>
+         <enumVal name="FINNISH" value="4"/>
+         <enumVal name="NORWEGIAN" value="5"/>
+         <enumVal name="ITALIAN" value="6"/>
+         <enumVal name="DUTCH" value="7"/>
+         <enumVal name="SPANISH" value="8"/>
+         <enumVal name="FRENCH" value="9"/>
+         <enumVal name="WELCH" value="10"/>
+         <enumVal name="PORTUGUESE" value="11"/>
+         <enumVal name="CZECH" value="12"/>
+         <enumVal name="AMERICAN_ENGLISH" value="13"/>
+         <enumVal name="HUNGARIAN" value="14"/>
+         <enumVal name="GREEK" value="15"/>
+         <enumVal name="POLISH" value="16"/>
+         <enumVal name="SLOVAK" value="17"/>
+         <enumVal name="RUSSIAN" value="18"/>
+         <enumVal name="SLOVENIAN" value="19"/>
+         <enumVal name="TURKISH" value="20"/>
+         <enumVal name="ARABIC" value="21"/>
+         <enumVal name="SWISS_FRENCH" value="22"/>
+         <enumVal name="SWISS_GERMAN" value="23"/>
+         <enumVal name="ICELANDIC" value="24"/>
+         <enumVal name="BELGIAN_FLEMISH" value="25"/>
+         <enumVal name="AUSTRALIAN_ENGLISH" value="26"/>
+         <enumVal name="BELGIAN_FRENCH" value="27"/>
+         <enumVal name="AUSTRIAN_GERMAN" value="28"/>
+	 <enumVal name="NEW_ZEALAND_ENGLISH" value="29"/>
+         <enumVal name="CHINESE_TAIWAN" value="30"/>
+         <enumVal name="CHINESE_HONG_KONG" value="31"/>
+         <enumVal name="CHINESE_PRC" value="32"/>
+         <enumVal name="JAPANESE" value="33"/>
+         <enumVal name="THAI" value="34"/>
+         <enumVal name="AFRIKAANS" value="35"/>
+         <enumVal name="ALBANIAN" value="36"/>
+         <enumVal name="AMHARIC" value="37"/>
+         <enumVal name="ARMENIAN" value="38"/>
+         <enumVal name="TAGALOG" value="39"/>
+         <enumVal name="BELARUSIAN" value="40"/>
+         <enumVal name="BENGALI" value="41"/>
+         <enumVal name="BULGARIAN" value="42"/>
+         <enumVal name="BURMESE" value="43"/>
+         <enumVal name="CATALAN" value="44"/>
+         <enumVal name="CROATIAN" value="45"/>
+         <enumVal name="CANADIAN_ENGLISH" value="46"/>
+         <enumVal name="SOUTH_AFRICAN_ENGLISH" value="47"/>
+         <enumVal name="ESTONIAN" value="48"/>
+         <enumVal name="FARSI" value="49"/>
+         <enumVal name="CANADIAN_FRENCH" value="50"/>
+         <enumVal name="GAELIC" value="51"/>
+         <enumVal name="GEORGIAN" value="52"/>
+         <enumVal name="GREEK_CYPRUS" value="53"/>
+         <enumVal name="GUJARATI" value="54"/>
+         <enumVal name="HEBREW" value="55"/>
+         <enumVal name="HINDI" value="56"/>
+         <enumVal name="INDONESIAN" value="57"/>
+         <enumVal name="IRISH" value="58"/>
+         <enumVal name="SWISS_ITALIAN" value="59"/>
+         <enumVal name="KANNADA" value="60"/>
+         <enumVal name="KAZAKH" value="61"/>
+         <enumVal name="KHMER" value="62"/>
+         <enumVal name="KOREAN" value="63"/>
+         <enumVal name="LAO" value="64"/>
+         <enumVal name="LATVIAN" value="65"/>
+         <enumVal name="LITHUANIAN" value="66"/>
+         <enumVal name="MACEDONIAN" value="67"/>
+         <enumVal name="MALAY" value="68"/>
+         <enumVal name="MALAYALAM" value="69"/>
+         <enumVal name="MARATHI" value="70"/>
+         <enumVal name="MOLDAVIAN" value="71"/>
+         <enumVal name="MONGOLIAN" value="72"/>
+         <enumVal name="NYNORSK" value="73"/>
+         <enumVal name="BRAZILIAN_PORTUGUESE" value="74"/>
+         <enumVal name="PUNJABI" value="75"/>
+         <enumVal name="ROMANIAN" value="76"/>
+         <enumVal name="SERBIAN" value="77"/>
+         <enumVal name="SINHALESE" value="78"/>
+         <enumVal name="SOMALI" value="79"/>
+         <enumVal name="LATIN_AMERICAN_SPANISH" value="80"/>
+         <enumVal name="SWAHILI" value="81"/>
+         <enumVal name="FINNISH_SWEDISH" value="82"/>
+         <enumVal name="TAMIL" value="83"/>
+         <enumVal name="TELUGU" value="84"/>
+         <enumVal name="TIBETAN" value="85"/>
+         <enumVal name="TIGRINYA" value="86"/>
+         <enumVal name="CYPRUS_TURKISH" value="87"/>
+         <enumVal name="TURKMEN" value="88"/>
+         <enumVal name="UKRAINIAN" value="89"/>
+         <enumVal name="URDU" value="90"/>
+         <enumVal name="VIETNAMESE" value="91"/>
+         <enumVal name="ZULU" value="92"/>
+         <enumVal name="SESOTHO" value="93"/>
+         <enumVal name="BASQUE" value="94"/>
+         <enumVal name="GALICIAN" value="95"/>
+         <enumVal name="ASIA_PACIFIC_ENGLISH" value="96"/>
+         <enumVal name="TAIWAN_ENGLISH" value="97"/>
+         <enumVal name="HONG_KONG_ENGLISH" value ="98"/>
+         <enumVal name="CHINA_ENGLISH" value="99"/>
+         <enumVal name="JAPAN_ENGLISH" value="100"/>
+         <enumVal name="THAI_ENGLISH" value="101"/>
+         <enumVal name="ASIA_PACIFIC_MALAY" value="102"/>
+         <enumVal name="BOSNIAN" value="103"/>
+         <enumVal name="MALTESE" value="104"/>
+         <enumVal name="CHINESE_TRADITIONAL" value="105"/>
+      </enum>
+
+    <!-- serverparams.tex revision a84044588d31 -->
+    <!-- see param 24 -->
+    <enum name="ExtendedErrorCode"
+	  description="Earth extended error code">
+      <enumVal name="NO_EXTENDED_ERROR" value="0x0"/>
+      <enumVal name="ROUTING_NOT_ALLOWED" value="0x17001"/>
+    </enum>
+
+    <!-- this enum must fit in 2 byts. See params 1302, 1303. -->
+    <enum name="RegionType" description="Search location type. Do not confuse with Top region.">
+      <enumVal name="streetnumber" value="0x01"/>
+      <enumVal name="address" value="0x02"/>
+      <enumVal name="city_part" value="0x03"/>
+      <enumVal name="city" value="0x04"/>
+      <enumVal name="municipal" value="0x05"/>
+      <enumVal name="county" value="0x06"/>
+      <enumVal name="state" value="0x07"/>
+      <enumVal name="country" value="0x08"/>
+      <enumVal name="zipcode" value="0x09"/>
+      <enumVal name="zipArea" value="0x0a"/>
+    </enum>
+
+    <!-- this enum must fit in 1 byte, see param 1304. -->
+    <enum name="SearchItemType" description="Search item type.">
+      <enumVal name="street" value="0x01"/>
+      <enumVal name="poi" value="0x02"/>
+      <enumVal name="misc" value="0x03"/>
+      <enumVal name="category" value="0x04"/>
+      <enumVal name="persons" value="0x05"/>
+    </enum>
+
+    <!-- this enum must fit in 1 byte, see param 1304. -->
+    <enum name="SearchItemSubType">
+      <enumVal name="company" value="0"/>
+      <enumVal name="airport" value="1"/>
+      <enumVal name="amusementPark" value="2"/>
+      <enumVal name="atm" value="3"/>
+      <enumVal name="automobileDealership" value="4"/>
+      <enumVal name="bank" value="5"/>
+      <enumVal name="bowlingCentre" value="6"/>
+      <enumVal name="busStation" value="7"/>
+      <enumVal name="businessFacility" value="8"/>
+      <enumVal name="casino" value="9"/>
+      <enumVal name="cinema" value="10"/>
+      <enumVal name="cityCentre" value="11"/>
+      <enumVal name="cityHall" value="12"/>
+      <enumVal name="communityCentre" value="13"/>
+      <enumVal name="commuterRailStation" value="14"/>
+      <enumVal name="courtHouse" value="15"/>
+      <enumVal name="exhibitionOrConferenceCentre" value="16"/>
+      <enumVal name="ferryTerminal" value="17"/>
+      <enumVal name="frontierCrossing" value="18"/>
+      <enumVal name="golfCourse" value="19"/>
+      <enumVal name="groceryStore" value="20"/>
+      <enumVal name="historicalMonument" value="21"/>
+      <enumVal name="hospital" value="22"/>
+      <enumVal name="hotel" value="23"/>
+      <enumVal name="iceSkatingRink" value="24"/>
+      <enumVal name="library" value="25"/>
+      <enumVal name="marina" value="26"/>
+      <enumVal name="motoringOrganisationOffice" value="27"/>
+      <enumVal name="museum" value="28"/>
+      <enumVal name="nightlife" value="29"/>
+      <enumVal name="openParkingArea" value="30"/>
+      <enumVal name="parkAndRide" value="31"/>
+      <enumVal name="parkingGarage" value="32"/>
+      <enumVal name="petrolStation" value="33"/>
+      <enumVal name="policeStation" value="34"/>
+      <enumVal name="publicSportAirport" value="35"/>
+      <enumVal name="railwayStation" value="36"/>
+      <enumVal name="recreationFacility" value="37"/>
+      <enumVal name="rentACarFacility" value="38"/>
+      <enumVal name="restArea" value="39"/>
+      <enumVal name="restaurant" value="40"/>
+      <enumVal name="school" value="41"/>
+      <enumVal name="shoppingCentre" value="42"/>
+      <enumVal name="skiResort" value="43"/>
+      <enumVal name="sportsActivity" value="44"/>
+      <enumVal name="sportsCentre" value="45"/>
+      <enumVal name="theatre" value="46"/>
+      <enumVal name="touristAttraction" value="47"/>
+      <enumVal name="touristOffice" value="48"/>
+      <enumVal name="university" value="49"/>
+      <enumVal name="vehicleRepairFacility" value="50"/>
+      <enumVal name="winery" value="51"/>
+      <enumVal name="postOffice" value="52"/>
+      <enumVal name="tramStation" value="53"/>
+      <enumVal name="multi" value="54" comment="?"/>
+      <enumVal name="wcpoiType" value="55"/>
+      <enumVal name="shop" value="56"/>
+      <enumVal name="cemetery" value="57"/>
+      <enumVal name="industrialComplex" value="58"/>
+      <enumVal name="publicIndividualBuilding" value="59"/>
+      <enumVal name="otherIndividualBuilding" value="60"/>
+      <enumVal name="notCategorised" value="61"/>
+      <enumVal name="unknownType" value="62"/>
+      <enumVal name="airlineAccess" value="63"/>
+      <enumVal name="beach" value="64"/>
+      <enumVal name="campingGround" value="65"/>
+      <enumVal name="carDealer" value="66"/>
+      <enumVal name="concertHall" value="67"/>
+      <enumVal name="tollRoad" value="68"/>
+      <enumVal name="culturalCentre" value="69"/>
+      <enumVal name="dentist" value="70"/>
+      <enumVal name="doctor" value="71"/>
+      <enumVal name="driveThroughBottleShop" value="72"/>
+      <enumVal name="embassy" value="73"/>
+      <enumVal name="entryPoint" value="74"/>
+      <enumVal name="governmentOffice" value="75"/>
+      <enumVal name="mountainPass" value="76"/>
+      <enumVal name="mountainPeak" value="77"/>
+      <enumVal name="musicCentre" value="78"/>
+      <enumVal name="opera" value="79"/>
+      <enumVal name="parkAndRecreationArea" value="80"/>
+      <enumVal name="pharmacy" value="81"/>
+      <enumVal name="placeOfWorship" value="82"/>
+      <enumVal name="rentACarParking" value="83"/>
+      <enumVal name="restaurantArea" value="84"/>
+      <enumVal name="scenicView" value="85"/>
+      <enumVal name="stadium" value="86"/>
+      <enumVal name="swimmingPool" value="87"/>
+      <enumVal name="tennisCourt" value="88"/>
+      <enumVal name="vetrinarian" value="89"/>
+      <enumVal name="waterSports" value="90"/>
+      <enumVal name="yachtBasin" value="91"/>
+      <enumVal name="zoo" value="92"/>
+      <enumVal name="wlan" value="93"/>
+      <enumVal name="noType" value="94"
+	       comment="We know what the POI is, but there is no other appropriate type to use. So this is not the same as notCategorised or unknownType."/>
+
+      <enumVal name="invalidPOIType" value="95" comment="Marker for error type. Note that you can NOT assume that the type is valid if and only if type &lt; SearchItemSubType::invalidPOIType."/>
+      <enumVal name="church" value="96"/>
+      <enumVal name="mosque" value="97"/>
+      <enumVal name="synagogue" value="98"/>
+      <enumVal name="subwayStation" value="99"/>
+      <enumVal name="cafe" value="100"/>
+      <enumVal name="hinduTemple" value="101"/>
+      <enumVal name="buddhistSite" value="102"/>
+      <enumVal name="invalidItemSubType" value="255"/>
+    </enum>
+  </globalEnums>
+
+  <!-- ============================================================= -->
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- see below -->
+  <reqPacket 
+     name="NAV_ROUTE_REQ"
+     version="1">
+
+    <comment>
+      A request for a route, sent from the client to the server.
+    </comment>
+
+    <enum name="VehicleType">
+      <!-- all values must fit in 8 bits - see param 1005 -->
+      <enumVal name="passengerCar" value="0x01" comment="Passenger car."/>
+      <enumVal name="pedestrian" value="0x02" comment="Pedestrian."/>
+      <enumVal name="emergencyVehicle" value="0x03" comment="Emergency vehicle."/>
+      <enumVal name="taxi" value="0x04" comment="Taxi."/>
+      <enumVal name="publicBus" value="0x05" comment="Public bus."/>
+      <enumVal name="deliveryTruck" value="0x06" comment="Delivery truck."/>
+      <enumVal name="transportTruck" value="0x07" comment="Transport truck."/>
+      <enumVal name="highOccupancyVehicle" value="0x08" comment="Car with more than 2 passengers."/>
+      <enumVal name="bicycle" value="0x09" comment="Bicycle."/>
+      <enumVal name="publicTransportation" value="0x0a" comment="Public transportation."/>
+      <enumVal name="invalid" value="0xff" comment="server decides"/>
+    </enum>
+
+    <enum name="ContentType">
+      <!-- all values must fit in 8 bits - see param 1005 -->
+      <enumVal name="slim" value="1"
+	       comment="Preferred by the GPS-less mode. Sends enough
+			information that an itinerary can be generated the
+			client."
+	       />
+      <enumVal name="full" value="2"
+	       comment="Preferred by the GPS mode. Plenty of coordinates
+			ensures good route following, distance and time
+			to goal calculation, and off track detection."
+	       />
+    </enum>
+
+    <!-- see param 1013 -->
+    <enum name="RerouteReason">
+      <enumVal name="truncated_route" value="1"
+	       comment="The route was truncated the next piece is needed. "/>
+      <enumVal name="off_track" value="2"
+	       comment="The user went off track and needs a new route." />
+      <enumVal name="traffic_info_update" value="3"
+	       comment="The route should be updated with new traffic info."/>
+      <enumVal name="user_request" value="4"
+               comment="The user pressed some button to trigger a re-route."/>
+    </enum>
+
+    <paramRef id="1000"/>
+
+    <param id="1001" 
+	   name="Dest coord" 
+	   shortname="destCoord" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="Array of two int32. Destination coordinate."/>
+    <param id="1002" 
+	   name="Time to trunc" 
+	   shortname="timeToTrunc" 
+	   type="uint32" 
+	   defaultVal="MAX_UINT32 "
+	   description="Driving time in reply after which the server may
+			truncate route. Is the time in seconds of driving time, before the
+			route should be renewed. This can be used to make the most of the
+			traffic information in the server. In reality, when the server has
+			generated enough route for this amount of driving, it truncates the
+			route in the same way that it does when the route is too large for a
+			single download."/>
+    <param id="1004" 
+	   name="Current speed (m/s) times 32" 
+	   shortname="currentSpeedMps32" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="Current speed in meters/second * 32."/>
+    <param id="1005" 
+	   name="Route flags" 
+	   shortname="routeFlags" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="Flags field with:
+			LSB  CostA (Distance)        
+			+1   CostB (Time)                   
+			+2   CostC (Time with disturbances) 
+			+3   CostD (Not yet defined)        
+			+4   Avoidhighway                   
+			+5   Avoidtollroads                 
+			+6   Abbreviate                     
+			+7   AddLandmarks                   
+			+8 - 15 content, The degree of data wanted for the route.
+			@see ContentType.    
+			+16 - 23 vehicle, The vehicle type to make route for.
+			@see VehicleType.
+			+24 - 31 Reserved for future use."/>
+
+    <param id="1006" 
+	   name="Old route id" 
+	   shortname="oldRouteId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The route that this is a reroute of."/>
+    <param id="1007" 
+	   name="Search id route origin" 
+	   shortname="searchIdRouteOrigin" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Search id as origin."/>
+    <param id="1008" 
+	   name="Search id route destination"
+	   shortname="searchIdRouteDestination"
+	   type="string"
+	   description="Search id as destination."/>    
+    <!-- 1009 is deprecated and not used. -->
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: unit is bytes? -->
+    <param id="1010" 
+	   name="Max route size" 
+	   shortname="maxRouteSize" 
+	   type="uint32" 
+	   defaultVal="14000 "
+	   description="The maximum size of the reply route data parameter."/>
+    <param id="1011" 
+	   name="Origin fav coord" 
+	   shortname="originFavCoord" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="Array of two int32. Favorite coordinate as origin
+			coordinate."/>
+    <param id="1012" 
+	   name="Dest fav coord" 
+	   shortname="destFavCoord" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="Array of two int32. Favorite coordinate as destination
+			coordinate.
+			"/>
+
+    <param id="1013" 
+	   name="Reroute reason" 
+	   shortname="rerouteReason" 
+	   type="uint8" 
+	   enum="RerouteReason"
+	   defaultVal="4 - user_request "
+	   description="One uint8 containing a value from the RerouteReason enumeration.
+			"/>
+  </reqPacket>
+
+  <reqPacket name="NAV_ROUTE_REQ" version="2">
+    <derivesFrom name="NAV_ROUTE_REQ" version="1"/>
+
+    <comment>
+      A request for a route, sent from the client to the server.
+
+      The request parameters are the same but the reply will include
+      lanes, signposts and route color table.
+    </comment>
+  </reqPacket>
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- param 1104, 1105 -->
+  <replyPacket name="NAV_ROUTE_REPLY" version="1">
+    <comment>
+      A reply for a route request, sent from the server
+      to the client.
+
+      The Route reply has some specific status codes. Note that all these
+      codes have the highest bit set and NAV_STATUS_REQUEST_SPECIFIC_MASK 
+      can be used as a bit mask to detect them.
+    </comment>
+
+    <enum name="RouteReplyStatus">
+      <enumVal name="ROUTE_REPLY_NO_ROUTE_FOUND"
+	       value="0x81"
+	       comment="No route could be found to the destination(s) from the origin(s)."/>
+      <enumVal name="ROUTE_REPLY_TOO_FAR_FOR_VEHICLE"
+	       value="0x82"
+	       comment="Route is too far to go for the vehicle used. Mostly used
+			for peddestrian routes that are too long"/>
+      <enumVal name="ROUTE_REPLY_PROBLEM_WITH_ORIGIN"
+	       value="0x83"
+	       comment="Can not make out origin."/>
+      <enumVal name="ROUTE_REPLY_PROBLEM_WITH_DEST"
+	       value="0x84"
+	       comment="Can not make out destination."/>
+      <enumVal name="ROUTE_REPLY_NO_AUTO_DEST"
+	       value="0x85"
+	       comment="No auto destination and auto destination used as destination. Deprecated."/>
+      <enumVal name="ROUTE_REPLY_NO_ORIGIN"
+	       value="0x86"
+	       comment="No origin in request"/>
+      <enumVal name="ROUTE_REPLY_NO_DESTINATION"
+	       value="0x87"
+	       comment="No destination in request."/>
+      <enumVal name="ROUTE_REPLY_NO_ROUTE_CHANGE"
+	       value="0x88"
+	       comment="When an old route id and a reroute reason has benn
+			supplied in the request, the server may
+			signal this status to tell the client to keep using the old route.
+			When this status is set, the server only needs to send the Route
+			id parameter (1100). The route id is not strictly needed, but it
+			is a good sanity check."/>
+    </enum>
+
+    <param id="1100" 
+	   name="Route id" 
+	   shortname="routeId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The id of the route can be used in reroutes and
+			image requests."/>
+    <param id="1101" 
+	   name="Truncate dist (m)" 
+	   shortname="truncateDist" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="Distance (meters) after truncated route."/>
+    <param id="1102" 
+	   name="Dist (m) from trunc point to next waypoint." 
+	   shortname="distToWp" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="Distance from truncated point to next waypoint."/>
+    <param id="1103" 
+	   name="Phone dist" 
+	   shortname="phoneDist" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="Minimum distance (m) )left before trying to download the
+			rest of a truncated route."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- do we guarantee that no strings are split over the parameter boundary? -->
+    <param id="1104" 
+	   name="Route string table" 
+	   shortname="routeStringTable" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The strings used in the route. If more than one
+			String table parameter is present the ones following the first must be
+			appended to the first byte array."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- isn't Route Data V1.08 used? -->
+    <param id="1105" 
+	   name="Route data" 
+	   shortname="routeData" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The route data formatted according to the route
+			protocol. If more than one Route data parameter is present the ones
+			following the first must be appended to the first byte array.
+			The route data used is in Route data V1.07 (see separate
+			document)."/>
+    <param id="1106" 
+	   name="Route bbox" 
+	   shortname="routeBbox" 
+	   type="BoundingBox" 
+	   defaultVal="- "
+	   description="The route's boundingbox.
+			"/>
+    <param id="1107" 
+	   name="Traffic Information Update Interval" 
+	   shortname="trafficInfoUpdateIntervalMinutes" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The server can signal the lowest allowed
+			traffic information update interval - in minutes - to the client
+			with this parameter. The server will ignore this parameter if the
+			client sends it."/>
+  </replyPacket>
+
+  <replyPacket name="NAV_ROUTE_REPLY"
+	       version="2">
+    <derivesFrom name="NAV_ROUTE_REPLY" version="1"/>
+
+    <param id="1108" 
+	   name="Route Color Table" 
+	   shortname="routeColorTable" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="A table of any number of RGB byte triplets.
+			The order are R(red) byte, G(reen) byte and B(lue) byte repeated until
+			the end of param. The order in this list of triplets is the index of the
+			colors in the Signposts. The signposts are contained in the route data and not described here."/>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <!-- These are the global parameters for the search related packets -->
+  <globalParams>
+    <param id="1201" 
+	   name="Search area string" 
+	   shortname="searchAreaString" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Area name, search string."/>
+    <param id="1202" 
+	   name="Search AreaID" 
+	   shortname="searchAreaId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Id of the area selected. If present then search will be
+			made in this area."/>
+    <param id="1203" 
+	   name="Search item string" 
+	   shortname="searchItemString" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Item name, search string."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- ID:s from category tree or can also a free text category name
+	 be sent? -->
+    <param id="1204" 
+	   name="Search category" 
+	   shortname="searchCategory" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Category ID, search using this category."/>
+    <param id="1205" 
+	   name="TopRegionID" 
+	   shortname="topRegionId" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="Top region ID to search in. Used if no position is
+			given."/>
+  </globalParams>
+
+  <!-- These are the global structures shared for the search related packets   -->
+  <globalStructs>
+    <struct name="SearchRegion">
+      <member name="type"
+	      type="uint16"
+	      enum="RegionType"
+	      comment="Search location type. See RegionType."
+	      />
+
+      <member name="id" 
+	      type="string" 
+	      comment="MC2 internal id of this region"/>
+
+      <member name="name" 
+	      type="string"
+	      comment="Name of this region."/>
+    </struct>
+
+    <struct name="AreaMatch">
+      <member name="type"
+              type="uint16"
+	      enum="RegionType"
+              comment="Search location type. See RegionType."/>
+
+      <member name="id"
+              type="string"
+              comment="MC2 internal id of this area match."/>
+
+      <member name="name"
+              type="string"
+              comment="Name of this overview match."/>
+
+      <member name="nbr"
+              type="uint8"
+              comment="Number of regions for this area match. "/>
+
+      <member name="regions" 
+	      type="uint16[]"
+	      size="@nbr"
+	      comment="Region indices into region table. See param 1302."/>
+    </struct>
+    
+    <struct name="ItemMatch">
+      <member name="type"
+              enum="SearchItemType"
+              type="uint8"
+              comment="Search Item type."/>
+
+      <member name="sub_type"
+              enum="SearchItemSubType"
+              type="uint8"
+              comment="Search Item sub type."/>
+
+      <member name="id"
+              type="string"
+              comment="MC2 internal id of this item match."/>
+
+      <member name="name"
+              type="string"
+              comment="Name of this match."/>
+
+      <!-- TODO: use struct Coordinate instead. -->
+      <member name="lat"
+              type="int32"
+              comment="Latitude of item."/>
+
+      <member name="lon"
+              type="int32"
+              comment="Longitude of item."/>
+
+      <member name="nbr"
+              type="uint8"
+              comment="Number of regions for this match."/>
+
+      <member name="regions"
+              type="uint16[]"
+              size="@nbr" 
+	      comment="Region indices into region table. See param 1302."
+      />
+    </struct>
+  </globalStructs>
+
+
+  <!-- ============================================================= -->
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- see below -->
+  <reqPacket 
+     name="NAV_SEARCH_REQ"
+     version="1">
+
+    <!-- see param 1208 for more details -->
+    <struct name="SearchSorting">
+      <member name="areaSorting"
+	      type="byte"
+	      comment="AreaSorting."
+	      defaultVal="0x04"
+	      />
+      <member name="itemSorting"
+	      type="byte"
+	      comment="ItemSorting."
+	      defaultVal="0x04"
+	      />
+    </struct>
+
+    <comment>
+      A search request sent from the client to the server.
+    </comment>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- check with server. Have we just named the type indexAndCount
+         wrong or does this param do something else? -->
+    <param id="1200" 
+	   name="Search start index" 
+	   shortname="searchStartIndex" 
+	   type="IndexAndCount" 
+	   defaultVal="0,0 "
+	   description="The index of the first match to send in
+			reply, start at zero(0) then increase by nbr search hits. The first uint16
+			is for areas and the second is for items."/>
+    <paramRef id="1201"/>
+    <paramRef id="1202"/>
+    <paramRef id="1203"/>
+    <paramRef id="1204"/><!-- SERVER CHECK NEEDED, se param def -->
+    <paramRef id="1205"/>
+
+    <param id="1206" 
+	   name="Search pos coord" 
+	   shortname="searchPosCoord" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="Array of two int32. Position coordinate. This replaces
+			TopRegionID and, if not present, Search area string."/>
+    <param id="1207" 
+	   name="Max Nbr Search Matches" 
+	   shortname="maxNbrSearchMatches" 
+	   type="uint16" 
+	   defaultVal="10 "
+	   description="The reply full limit. See also param 1200."/>
+    <param id="1208" 
+	   name="Search sorting" 
+	   shortname="searchSorting" 
+	   type="SearchSorting" 
+	   description="How the areas, items, should be sorted.
+			The first byte denotes areas, the second
+			items. Possible values: 
+			
+			0x00  No sort            The result will not be sorted. 
+			0x01  Alfa sort          Matches are sorted in alphabetical order.
+			0x02  Confidence sort    Matches are sorted by confidence, attempting to
+                        place the most probable matches
+			on top of the match list.
+			0x04  Distance sort      Matches are sorted by their distance from the
+                        Search pos coord, falls back to
+			Confidence sort if no or invalid
+			Search pos coord."
+	   />
+  </reqPacket>
+
+  <replyPacket 
+     name="NAV_SEARCH_REPLY"
+     version="1">
+
+    <comment>
+      A reply to the search request, sent from the server
+      to the client. The reply can contain both area and item matches.
+    </comment>
+
+    <param id="1300" 
+	   name="Area nbrs" 
+	   shortname="areaNbrs" 
+	   type="IndexAndCount" 
+	   defaultVal="0,0 "
+	   description="The index of the first area match, the total number
+			of area matches for the search."/>
+    <param id="1301" 
+	   name="Item nbrs" 
+	   shortname="itemNbrs" 
+	   type="IndexAndCount" 
+	   defaultVal="0,0 "
+	   description="The index of the first item match, the total number
+			of item matches for the search."/>
+    <param id="1302" 
+	   name="Search regions" 
+	   shortname="searchRegions" 
+	   type="SearchRegion[]" 
+	   defaultVal="- "
+	   description="List of Search regions. The order of the Regions are
+			their index that is used in the area matches and the item
+			matches."
+	   />
+
+    <param id="1303" 
+	   name="Area matches" 
+	   shortname="areaMatches" 
+	   type="AreaMatch[]" 
+	   defaultVal="- "
+	   description="List of Area matches."/>
+
+    <param id="1304" 
+	   name="Item matches" 
+	   shortname="itemMatches" 
+	   type="ItemMatch[]" 
+	   defaultVal="- "
+	   description="List of Item matches."/>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <reqPacket 
+     name="NAV_REV_GEOCODING_REQ"
+     version="1">
+
+    <comment>
+      A request for a conversion from position to address, sent
+      from client to server.
+    </comment>
+
+    <param id="1400" 
+	   name="Lookup position" 
+	   shortname="gpsCurrPos" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="The coordinate to look up."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- not in .tex! -->
+    <param id="1401" 
+	   name="GPS Heading" 
+	   shortname="gpsHeading" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="Current heading."/>
+  </reqPacket>
+
+  <replyPacket name="NAV_REV_GEOCODING_REPLY"
+	       version="1">
+    <comment>
+      A reply to a NAV_REV_GEOCODING_REQ, sent from the server to the
+      client. None of the params are mandatory, so you can get a reply without
+      any geographical info at all.
+    </comment>
+
+    
+    <!-- called country name in navserver_prot.tex but is top region
+         which might not correspond to a legal country.
+	 For example US States are separate top regions.
+    -->
+    <param id="1500" 
+	   name="TopRegionName" 
+	   shortname="topRegionName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Name of the top region."/>
+    <param id="1501" 
+	   name="MunicipalName" 
+	   shortname="municipalName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Name of municipal."/>
+    <param id="1502" 
+	   name="CityName" 
+	   shortname="cityName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Name of city."/>
+    <param id="1503" 
+	   name="DistrictName" 
+	   shortname="districtName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Name of city district."/>
+    <param id="1504" 
+	   name="AddressName" 
+	   shortname="addressName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Name of street address."/>
+    <param id="1505" 
+	   name="TopRegionID" 
+	   shortname="topRegionID" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The top region id of the position."/>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <reqPacket name="NAV_MAP_REQ" version="1">
+
+    <comment>
+      This request is used to request a map image from the server.
+
+      This is the order in which to select the maps's boundingbox.
+
+      Boundingbox --  A complete bounding box.
+      VectorBox   --  The bounding box will be calculated from the current
+      position, heading, speed and Route ID.
+      RadiusBox   --  The bounding box will contain a circle centered on the
+      current  position and with the specified map radius.
+      RouteBox    -- The bounding box will contain the entire route specified by the Route ID.  
+    </comment>
+
+    <!-- must fit in 8 bits. See param 1608, 1703 -->
+    <enum name="ImageFormat">
+      <enumVal name="PNG" value="0" comment="PNG Portable Network Graphics"/>
+      <enumVal name="WBMP" value="1" comment="Wireless BitMaP"/>
+      <enumVal name="JPEG" value="2" comment="Joint Pictures Expert Group"/>
+      <enumVal name="GIF" value="3" comment="Graphics Interchange Format"/>
+      <enumVal name="NBR_IMAGE_FORMATS" value="4" comment="The number of image formats, must be last!"/>
+    </enum>
+
+    <enum name="MapItemType">
+      <enumVal name="Invalid" value="0"/>
+      <enumVal name="Route" value="1"/>
+      <enumVal name="SearchItem" value="2"/>
+      <enumVal name="Favorite" value="3"/>
+      <enumVal name="UserPosition" value="4"/>
+    </enum>
+    
+    <struct name="MapItem">
+      <member name="type"
+	      type="uint16"
+	      enum="MapItemType" 
+	      comment="Can be used to decide which symbol to use in the map
+		       image."/>
+      <!-- TODO: use struct Coordinate -->
+      <member name="lat" type="int32" comment="Latitude"/>
+
+      <member name="lon" type="int32" comment="Latitude"/>
+    </struct>
+
+
+    <param id="1600" 
+	   name="MapBoundingbox" 
+	   shortname="mapBoundingBox" 
+	   type="BoundingBox" 
+	   defaultVal="- "
+	   description="The Bounding Box to make map for."/>
+    <param id="1601" 
+	   name="MapPosition" 
+	   shortname="mapPosition" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="The current position."/>
+    <param id="1602" 
+	   name="Current speed (m/s) times 32" 
+	   shortname="currentSpeedMps32" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="The current speed in m/s * 32."/>
+    <param id="1603" 
+	   name="Heading" 
+	   shortname="heading" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="The current heading."/>
+    <param id="1604" 
+	   name="Map radius (m)" 
+	   shortname="mapRadius" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The desired map radius in meters."/>
+    <param id="1605" 
+	   name="Route ID" 
+	   shortname="routeId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The ID of the route to draw on the map. See param 1100."/>
+    <param id="1606" 
+	   name="Image size (pixels)" 
+	   shortname="imageSize" 
+	   type="PixelDimensions" 
+	   defaultVal="- "
+	   description="Image width and height. Specifies how large the
+			resulting image should be in pixels."/>
+    <param id="1607" 
+	   name="Viewbox size (pixels)" 
+	   shortname="viewboxSize" 
+	   type="PixelDimensions" 
+	   defaultVal="- "
+	   description="Viewbox width and height. Specifies how large the
+			displayed part of the image will be, which could 
+			affect name placement in the map."/>
+
+    <param id="1608" 
+	   name="Image Format" 
+	   shortname="imageFormat" 
+	   type="byte" 
+	   enum="ImageFormat"
+	   defaultVal="- "
+	   description="Specifies the desired graphics format."/>
+
+    <param id="1609" 
+	   name="Map Item" 
+	   shortname="mapItem" 
+	   type="MapItem" 
+	   defaultVal="- "
+	   description="Informs the server about items that should be indicated in the map."/>    
+
+    <param id="1610" 
+	   name="Extra info" 
+	   shortname="extraInfo" 
+	   type="ExtraInfo[]" 
+	   defaultVal="- "
+	   description="Informs the server about information to include in the map."/>
+
+    <!-- must fit in 16 bits, see struct ExtraInfo -->
+    <enum name="MapInfoType">
+      <enumVal name="Invalid" value="0"/>
+      <enumVal name="Category" value="1"
+	       comment="Value determines what category, not yet defined."
+	       />
+      <enumVal name="TrafficInformation" value="2"
+	       comment="If value != 0 then traffic info in map."
+	       />
+      <enumVal name="Ruler" value="3"
+	       comment="If value != 0 then draw scale on map."
+	       />
+      <enumVal name="Topographic" value="4"
+	       comment="If value != 0 then draw topographic background on map."
+	       />
+      <enumVal name="MapFormat" value="5"
+	       comment="Palette and similar info, not yet defined."
+	       />
+      <enumVal name="Rotate" value="6"
+	       comment="Value is rotation angle."
+	       />
+    </enum>
+
+    <struct name="ExtraInfo">
+      <member name="type"
+	      type="uint16"
+	      enum="MapInfoType"
+	      comment="Describes the content."/>
+      <member name="value" type="int32"
+	      comment="Relevant data depending on the type."/>
+    </struct>
+  </reqPacket>
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- unclear semantics of certain parameters, see below -->
+  <replyPacket name="NAV_MAP_REPLY" version="1">
+
+    <comment>
+      These parameters serves a map image to the client.
+    </comment>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- can this differ from param 1600? Perhaps only relevant
+	 if the server had to generate the bounding box on its own -->
+    <param id="1700" 
+	   name="MapBoundingbox" 
+	   shortname="mapBoundingBox" 
+	   type="BoundingBox" 
+	   defaultVal="- "
+	   description="The bounding box of the generated map image."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- can this differ from param 1606? Perhaps only relevant
+	 if the server was free to decide to use some default size? -->
+    <param id="1701" 
+	   name="Image size (pixels)." 
+	   shortname="imageSize" 
+	   type="PixelDimensions" 
+	   defaultVal="- "
+	   description="Image width and height in pixels."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- is mid-cos-lat formula used or something else? -->
+    <param id="1702" 
+	   name="Real world size (m)." 
+	   shortname="realWorldSize" 
+	   type="MeterDimensions" 
+	   defaultVal="- "
+	   description="Image width and height in meters."/>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- link with enum ImageFormat.
+        Can this differ from param 1608 or only relevant if client
+        did not send it? -->
+    <param id="1703" 
+	   name="Image Format" 
+	   shortname="imageFormat" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="Specifies graphics format. See Image Format."/>
+    <param id="1704" 
+	   name="Image" 
+	   shortname="image" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The image buffer."/>
+    <param id="1705" 
+	   name="Checkpoint" 
+	   shortname="checkpoint" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="Point where new map is needed. Used when making a VectorBox."/>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <!-- These are the global structures shared for the favorite related packets   -->
+
+    <!-- TODO: Find out how to deal with old versions -->
+    <!-- FavoriteData for NAV_FAV_REQ v.1 -->
+    <!-- <struct name="FavoriteData"> -->
+    <!--   <member name="ID" type="int32" comment="The ID."/> -->
+    <!--   <member name="lat" type="int32" comment="The latitude."/> -->
+    <!--   <member name="lon" type="int32" comment="The longitude."/> -->
+    <!--   <member name="name" type="string" comment="String containing the name."/> -->
+    <!--   <member name="shortName" type="string" comment="String containing the shortName."/> -->
+    <!--   <member name="description" type="string" comment="String containing the description."/> -->
+    <!--   <member name="category" type="string" comment="String containing the category."/> -->
+    <!--   <member name="mapIconName" type="string" comment="String containing the mapIconName."/> -->
+    <!-- </struct> -->
+
+  <globalEnums>
+    <!-- used in InfoField -->
+    <!-- tex-spec specifies this in section NAV_INFO_REPLY v.1 -->
+    <enum name="AdditionalInfoType"
+	  comment="AdditionalInfoType enumeration. All unrecognized types are considered text.">
+      <enumVal name="dontShow" value="0x00"/>
+      <enumVal name="text" value="0x01"/>
+      <enumVal name="url" value="0x02"/>
+      <enumVal name="wap_url" value="0x03"/>
+      <enumVal name="email" value="0x04"/>
+      <enumVal name="phone_number" value="0x05"/>
+      <enumVal name="mobile_phone" value="0x06"/>
+      <enumVal name="fax_number" value="0x07"/>
+      <enumVal name="contact_info" value="0x08"/>
+      <enumVal name="short_info" value="0x09"/>
+      <enumVal name="vis_address" value="0x0a"/>
+      <enumVal name="vis_house_nbr" value="0x0b"/>
+      <enumVal name="vis_zip_code" value="0x0c"/>
+      <enumVal name="vis_complete_zip" value="0x0d"/>
+      <enumVal name="vis_zip_area " value="0x0e"/>
+      <enumVal name="vis_full_address" value="0x0f"/>
+      <enumVal name="brandname" value="0x10"/>
+      <enumVal name="short_description" value="0x11"/>
+      <enumVal name="long_description" value="0x12"/>
+      <enumVal name="citypart" value="0x13"/>
+      <enumVal name="state" value="0x14"/>
+      <enumVal name="neighborhood" value="0x15"/>
+      <enumVal name="open_hours" value="0x16"/>
+      <enumVal name="nearest_train" value="0x17"/>
+      <enumVal name="start_date" value="0x18"/>
+      <enumVal name="end_date" value="0x19"/>
+      <enumVal name="start_time" value="0x1a"/>
+      <enumVal name="end_time" value="0x1b"/>
+      <enumVal name="accommodation_type" value="0x1c"/>
+      <enumVal name="check_in" value="0x1d"/>
+      <enumVal name="check_out" value="0x1e"/>
+      <enumVal name="nbr_of_rooms" value="0x1f"/>
+      <enumVal name="single_room_from" value="0x20"/>
+      <enumVal name="double_room_from" value="0x21"/>
+      <enumVal name="triple_room_from" value="0x22"/>
+      <enumVal name="suite_from" value="0x23"/>
+      <enumVal name="extra_bed_from" value="0x24"/>
+      <enumVal name="weekend_rate" value="0x25"/>
+      <enumVal name="nonhotel_cost" value="0x26"/>
+      <enumVal name="breakfast" value="0x27"/>
+      <enumVal name="hotel_services" value="0x28"/>
+      <enumVal name="credit_card" value="0x29"/>
+      <enumVal name="special_feature" value="0x2a"/>
+      <enumVal name="conferences" value="0x2b"/>
+      <enumVal name="average_cost" value="0x2c"/>
+      <enumVal name="booking_advisable" value="0x2d"/>
+      <enumVal name="admission_charge" value="0x2e"/>
+      <enumVal name="home_delivery" value="0x2f"/>
+      <enumVal name="disabled_access" value="0x30"/>
+      <enumVal name="takeaway_available" value="0x31"/>
+      <enumVal name="allowed_to_bring_alcohol" value="0x32"/>
+      <enumVal name="type_food" value="0x33"/>
+      <enumVal name="decor" value="0x34"/>
+      <enumVal name="image_url" value="0x35"/>
+      <enumVal name="supplier" value="0x36"/>
+      <enumVal name="owner" value="0x37"/>
+      <enumVal name="price_petrol_superplus" value="0x38"/>
+      <enumVal name="price_petrol_super" value="0x39"/>
+      <enumVal name="price_petrol_normal" value="0x3a"/>
+      <enumVal name="price_diesel" value="0x3b"/>
+      <enumVal name="price_biodiesel" value="0x3c"/>
+      <enumVal name="free_of_charge" value="0x3d"/>
+      <enumVal name="tracking_data" value="0x3e"/>
+      <enumVal name="post_address" value="0x3f"/>
+      <enumVal name="post_zip_area" value="0x40"/>
+      <enumVal name="post_zip_code" value="0x41"/>
+      <enumVal name="open_for_season" value="0x42"/>
+      <enumVal name="ski_mountain_min_max_height" value="0x43"/>
+      <enumVal name="snow_depth_valley_mountain" value="0x44"/>
+      <enumVal name="snow_quality" value="0x45"/>
+      <enumVal name="lifts_open_total" value="0x46"/>
+      <enumVal name="ski_slopes_open_total" value="0x47"/>
+      <enumVal name="cross_country_skiing_km" value="0x48"/>
+      <enumVal name="glacier_area" value="0x49"/>
+      <enumVal name="last_snowfall" value="0x4a"/>
+      <enumVal name="special_flag" value="0x4b"
+	       comment="The special_flag field means that if you don't find any special field you know how to handle, this favorite should not be shown. Special fields are like tracking_data which requires a tracking request to get the latest coordinate for the tracked user."/>
+
+      <enumVal name="tele_p_phone_nbr" value="0x4c"/>
+      <enumVal name="static_id" value="0x4d"/>
+      <enumVal name="has_service" value="0x4e"/>
+      <enumVal name="has_carwash" value="0x4f"/>
+      <enumVal name="has_24h_self_service_zone" value="0x50"/>
+      <enumVal name="drive_in" value="0x51"/>
+      <enumVal name="mailbox_collection_time" value="0x52"/>
+      <enumVal name="performer" value="0x53"/>
+      <enumVal name="booking_url" value="0x54"/>
+      <enumVal name="booking_phone_number" value="0x55"/>
+      
+      <enumVal name="more" value="0xff"/>
+    </enum>
+  </globalEnums>
+
+  <globalStructs>
+  <struct name="InfoField">
+    <member name="type" enum="AdditionalInfoType" type="uint16"
+	    comment="The AdditionalInfo type of the info field see."/>
+    <member name="key" type="string"
+	    comment="The string key of the info field."/>
+    <member name="value" type="string"
+	    comment="The string value of the info field."/>
+  </struct>
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- this is FavoriteData for NAV_FAV_REPLY v.2. -->
+  <struct name="FavoriteData">
+      <member name="ID" type="int32" comment="The ID."/>
+      <!-- TODO: use Coordinate -->
+      <member name="lat" type="int32" comment="The latitude."/>
+      <member name="lon" type="int32" comment="The longitude."/>
+      <member name="name" type="string"
+	      comment="String containing the name."/>
+      <member name="shortName" type="string"
+	      comment="String containing the shortName."/>
+      <member name="description" type="string"
+	      comment="String containing the description."/>
+      <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+      <!-- is this an ID or the name of the category? -->
+      <member name="category" type="string"
+	      comment="String containing the category."/>
+      <member name="mapIconName" type="string"
+	      comment="String containing the mapIconName."/>
+      <member name="nbrInfos" type="uint16"
+	      comment="The number of info fields."/>
+      <member name="infoFields" type="InfoField[]" size="@nbrInfos"/>
+    </struct>
+  </globalStructs>
+
+
+
+  <!-- FIXME: this version is not usable since the layout of FavoriteData
+       was changed in version="2".
+
+       It is only used to derive to version 2 requests. -->
+  <reqPacket name="NAV_FAV_REQ" version="1">
+
+    <comment>
+      A request to synchronize favorites from client.
+    </comment>
+
+    <param id="4800" 
+	   name="Favflags" 
+	   shortname="favFlags" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="If least significant bit set, NoSync."/>
+
+    <param id="4801" 
+	   name="FavIDSync" 
+	   shortname="favIdSync" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="Favorite IDs to sync. IDs of favorites that the client  has."/>
+    <param id="4802" 
+	   name="FavIDDel" 
+	   shortname="favIdDel" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="Favorite IDs to delete. IDs of favorites that the client has deleted."/>
+    <param id="4803" 
+	   name="FavAdd" 
+	   shortname="favAdd" 
+	   type="FavoriteData[]" 
+	   defaultVal="- "
+	   description="Array of favorites to add."/>
+  </reqPacket>
+
+
+  <reqPacket name="NAV_FAV_REQ" version="2">
+    <derivesFrom name="NAV_FAV_REQ" version="1"/>
+    <comment>
+      A request to synchronize favorites from client.
+
+      This request differes from v.1 in the layout of FavoriteData.
+    </comment>
+  </reqPacket>
+
+  <reqPacket name="NAV_FAV_REQ" version="3">
+    <derivesFrom name="NAV_FAV_REQ" version="2"/>
+    <comment>
+      A request to synchronize favorites from client.
+
+      Request is same as v.2 but the reply is different.
+    </comment>
+  </reqPacket>
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- see FavoriteData -->
+  <reqPacket name="NAV_FAV_REQ" version="4">
+    <derivesFrom name="NAV_FAV_REQ" version="3"/>
+    <comment>
+      A request to synchronize favorites from client.
+
+      Difference from v.3 is the semantics in reply for 
+      AdditionalInfoType::image_url and AdditionalInfoType::url.
+    </comment>
+  </reqPacket>
+
+
+  <replyPacket name="NAV_FAV_REPLY" version="1">
+    <comment>
+      A reply from server with the changes needed to make the client's
+      favorites up to date with the server.
+    </comment>
+
+    <param id="4900" 
+	   name="AddFav" 
+	   shortname="addFav" 
+	   type="FavoriteData[]" 
+	   defaultVal="- "
+	   description="List of favorites to add."/>
+    <param id="4901" 
+	   name="DelFav" 
+	   shortname="delFav" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="Favorite IDs to delete."/>
+    <param id="4902" 
+	   name="AutoFav" 
+	   shortname="autoFav" 
+	   type="FavoriteData" 
+	   defaultVal="-"
+	   description="The auto dest Favorite. Deprecated."/>
+  </replyPacket>
+
+  <replyPacket name="NAV_FAV_REPLY" version="2">
+    <derivesFrom name="NAV_FAV_REPLY" version="1"/>
+    <comment>
+      A reply from server with the changes needed to make the client's
+      favorites up to date with the server.
+
+      This reply differes from v.1 in the layout of FavoriteData.
+    </comment>
+  </replyPacket>
+
+  <replyPacket name="NAV_FAV_REPLY" version="3">
+    <derivesFrom name="NAV_FAV_REPLY" version="2"/>
+    <comment>
+      A reply from server with the changes needed to make the client's
+      favorites up to date with the server.
+
+      The difference from v.2 is the addition of param 4903.
+    </comment>
+
+    <paramRef id="4903"/>
+  </replyPacket>
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- see FavoriteData
+
+       check with the server what the comment text (taken from
+       nav_server_prot.tex and de-texified) actually means. -->
+  <replyPacket name="NAV_FAV_REPLY" version="4">
+    <derivesFrom name="NAV_FAV_REPLY" version="3"/>
+    <comment>
+      A reply from server with the changes needed to make the client's
+      favorites up to date with the server.
+
+      In version 4 the client must support handling the
+      AdditionalInfoType::image_url and not only handle
+      AdditionalInfoType::url in a special way.
+    </comment>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <!-- see param 1800, req v.2 -->
+  <reqPacket name="NAV_INFO_REQ" version="1">
+    <comment>
+      A request for additional information about items, sent
+      from client to server.
+    </comment>
+
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- what shall be used if I want to get all additional info
+         available for a search item?
+         Can I request information for several items?
+    -->
+    <param id="1800" 
+	   name="InfoItemID" 
+	   shortname="infoItemId" 
+	   type="StringPair" 
+	   defaultVal="- "
+	   description="First string is Search item id and second string is
+			AdditionalInfo value. The AdditionalInfo is the value from a earlier
+			delivered InfoItem with the type more, see
+			additionalInfoEnum, or empty string if not to get additional info."/>
+
+  </reqPacket>
+
+  <!-- NOT CHECKED WITH .TEX -->
+  <!-- TODO: NAV_INFO_REQ v.2 -->
+
+  <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+  <reqPacket name="NAV_INFO_REPLY" version="1">
+    <comment>
+      A reply to an info request, sent from the server to the client.
+    </comment>
+
+    <!-- TODO: The xml specification is probably wrong.
+
+	 The received structure is probably something like this (needs
+	 to be checked with server):
+
+        <struct name="InfoItem">
+          <member name="item" type="string"
+                  comment="The MC2 internal id sent in the request."/>
+          <member name="nbr" type="uint8"
+                  comment="The number of type-key-value tuples for this item"/>
+	  <member name="tuples" type="InfoField[]" size="@nbr">
+        </struct>
+
+        <struct name="InfoField">
+	  <member name="type" type="uint8" enum="AdditionalInfoType"
+		  comment="The type of information."/>
+	  <member name="key" type="string"
+		  comment="String to be presented as first value or key."/>
+	  <member name="value" type="string"
+		  comment="String to be presented as second value."/>
+	</struct>
+
+        Compare with poi_info_reply in XML API.
+    -->
+	 
+    <struct name="InfoItem">
+      <member name="item" type="string"
+	      comment="The MC2 internal id sent in the request."/>
+      <member name="nbr_tuples" type="uint8"
+	      comment="The number of type-key-value tuples for this item"/>
+      <member name="type" type="uint8" enum="AdditionalInfoType"
+	      comment="The type of information."/>
+      <member name="key" type="string"
+	      comment="String to be presented as first value or key."/>
+      <member name="value" type="string"
+	      comment="String to be presented as second value."/>
+    </struct>
+
+    <param id="1900" 
+	   name="InfoItems" 
+	   shortname="infoItems" 
+	   type="InfoItem[]" 
+	   defaultVal="- "
+	   description="List of InfoItems."/>
+  </reqPacket>
+
+
+  <!-- ============================================================= -->
+  <reqPacket name = "NAV_MESSAGE_REQ" version="1">
+    <comment>
+      This message is a request from the client to the server to send a
+      map, route, itinerary, favorite, or search result to another
+      terminal, Wayfinder client or not.
+    </comment>
+
+    <enum name="MessageType">
+      <enumVal name="invalid" value="0"/>
+      <enumVal name="HTML_email" value="1"/>
+      <enumVal name="non_HTML_email" value="2"/>
+      <enumVal name="SMS" value="3"/>
+      <enumVal name="MMS" value="4"/>
+      <enumVal name="FAX" value="6"/>
+      <enumVal name="InstantMessage" value="5"/>
+    </enum>
+
+    <enum name="ObjectType">
+      <enumVal name="invalid" value="0"/>
+      <enumVal name="Favorite" value="1"/>
+      <enumVal name="SearchItem" value="2"/>
+      <enumVal name="Route" value="4"/>
+      <enumVal name="Map" value="6"/>
+      <enumVal name="Position" value="7"/>
+    </enum>
+
+    <param id="2000" 
+	   name="MessageType" 
+	   shortname="messageType" 
+	   type="uint8" 
+	   enum="MessageType"
+	   defaultVal="- "
+	   description="The type of message to send. Select one from the
+			MessageType enum. Several kinds of Instant Message protocols exist,
+			so the protocol must be specified in the receiver string."/>
+
+    <param id="2001" 
+	   name="ObjectType" 
+	   shortname="objectType" 
+	   type="byte" 
+	   enum="ObjectType"
+	   defaultVal="- "
+	   description="The type of object to send. Select one from the
+			ObjectType enum."/>
+
+    <param id="2002" 
+	   name="Signature" 
+	   shortname="signature" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Signature at end of message."/>
+
+    <param id="2003" 
+	   name="Subject" 
+	   shortname="subject" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Subject of message. Used with email and MMS."/>
+
+    <param id="2004" 
+	   name="EmailReceiver" 
+	   shortname="emailReceiver" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The receiver email-address. Used with email and MMS."/>
+
+    <param id="2005" 
+	   name="EmailSender" 
+	   shortname="emailSender" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The sender email-address. Used with email and MMS."/>
+
+    <param id="2006" 
+	   name="PhoneReceiver" 
+	   shortname="phoneReceiver" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The phonenumber of the receiver. Used with SMS."/>
+
+    <param id="2007" 
+	   name="PhoneSender" 
+	   shortname="phoneSender" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The phonenumber of the sender. Used with SMS."/>
+
+    <param id="2008" 
+	   name="FavoriteID" 
+	   shortname="favoriteId" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The ID of the favorite to show."/>
+
+    <param id="2009" 
+	   name="SearchItemID" 
+	   shortname="searchItemId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The ID of the SearchItem to show."/>
+
+    <param id="2010" 
+	   name="Position" 
+	   shortname="position" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="The position to show."/>
+
+    <param id="2011" 
+	   name="LocationName" 
+	   shortname="locationName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The name of the location, favorite, SearchItem or
+			position, to show."/>
+
+    <param id="2012" 
+	   name="RouteID" 
+	   shortname="routeId" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The ID of the route to show."/>
+
+    <param id="2013" 
+	   name="OriginName" 
+	   shortname="originName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The name of the origin. Server will set name of street
+			or coordinate of starting position in route if this parameter is not
+			present."/>
+    <param id="2014" 
+	   name="DestinationName" 
+	   shortname="destinationName" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The name of the destination. Server will set name of
+			street or coordinate of ending position in route if this parameter is not
+			present."/>
+
+    <comment>
+      The supported combinations of MessageType and ObjectType are:
+
+      HTML-email - Favorite, SearchItem, Route, Position
+      non-HTML-email - Route
+      SMS - Favorite, SearchItem, Route, Position
+      MMS - Favorite, SearchItem, Route, Position
+
+      HTML-email and non-HTML-email are sent by the server to the receiver, SMS
+      and MMS are sent back in the reply.
+    </comment>
+  </reqPacket>
+
+  <replyPacket name="NAV_MESSAGE_REPLY" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below the reply should contain 
+	 information if the message was not sent, how will this be in 
+	 the reply?-->
+    <comment>
+      Acknowledgment reply from the server. If the server is unable or
+      unwilling to send the message it is included in this reply so that the
+      client can send it itself.
+    </comment>
+
+    <param id="2100" 
+	   name="Message buffer" 
+	   shortname="messageBuffer" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Data to send. If more than one
+			Message buffer parameter is present the ones following the first must be
+			appended to the first byte array."/>
+
+    <comment>
+      Message parts are separated by the separator sequence: \r\n&lt;&lt;&lt;&lt;&lt;&lt;"
+
+      In the case that the reply Message buffer contains SMS the SMSes are
+      separated by the separator sequence and there is one
+      separator sequence after the last SMS as well.
+
+      If the reply Message buffer contains MMS the MMSes are separated by
+      separator sequences and there is one after the last MMS as
+      well.  Each MMS has it's own mail header with "From:", "To:",
+      "Subject:", "MIME-Version:", and "Content-Type:" header fields.
+
+    </comment>
+  </replyPacket>
+
+  <reqPacket name="NAV_UPGRADE_REQ" version="1">
+
+    <comment>
+      Requests an upgrade from the server.
+    </comment>
+    <!-- Support Activation codes that requires client to select a top-region. -->
+    <!--     By server returning a top-region-list to select among. -->
+    <!--      Server sends error and client goes to a page, ac as param. -->
+    <!--      In future maybe a list of regionIDs and names to client. -->
+
+    <!--      No need to enter phone-number? Especially if re-activating. -->
+
+    <param id="2200" 
+	   name="ActivationCode" 
+	   shortname="activationCode" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The activation code to use."/>
+    <param id="2201" 
+	   name="PhoneNumber" 
+	   shortname="phoneNumber" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The user's phone number."/>
+    <param id="2202" 
+	   name="TopRegionID" 
+	   shortname="topRegionId" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The selected top region id in client. Not used."/>
+    <param id="2203" 
+	   name="Email" 
+	   shortname="email" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The user's email address."/>
+    <param id="2204" 
+	   name="Name" 
+	   shortname="name" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The user's name."/>
+    <param id="2205" 
+	   name="Options" 
+	   shortname="options" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The options the user has checked. A semicolon
+			separated list of options selected. ``opt_in_prod_info=1'' is ok to
+			send information in email to client."/>
+
+    <comment>
+      Params 2200,2201 and 2202 is sent together and 2203 and 2204 is sent together.
+    </comment>
+
+  </reqPacket>
+
+  <reqPacket name="NAV_UPGRADE_REQ" version="2" >
+    <derivesFrom name="NAV_UPGRADE_REQ" version="1"/>
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      In version 2 paramID 2202 is supported.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_UPGRADE_REPLY" version="1" >
+    
+    <comment>
+
+      Replies to a client whether the upgrade was approved, or if not what
+      was wrong with it.
+
+      If the status is ok and all boolean parameters in the message are set to
+      true, the licence was approved.
+
+
+    </comment>
+
+    <param id="2300" 
+	   name="TopRegionOK" 
+	   shortname="topRegionOk" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="If the selected TopRegion is ok."/>
+    <param id="2301" 
+	   name="ActivationCodeOK" 
+	   shortname="activationCodeOk" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="If the activation code is ok."/>
+    <param id="2302" 
+	   name="PhonenumberOK" 
+	   shortname="phonenumberOk" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="If the phone number is ok."/>
+    <param id="2303" 
+	   name="userWFType" 
+	   shortname="userWfType" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="The WFST after the upgrade."/>
+    <param id="2304" 
+	   name="CenterPoint" 
+	   shortname="centerPoint" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="The center point, lat, lon, for the user's regions,
+			and a scale."/>
+    <param id="2305" 
+	   name="EmailOK" 
+	   shortname="emailOk" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="If the email address is ok."/>
+    <param id="2306" 
+	   name="NameOK" 
+	   shortname="nameOk" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="If the name is ok."/> 
+
+  </replyPacket>
+
+  <replyPacket name="NAV_UPGRADE_REPLY" version="2" >
+    <derivesFrom name="NAV_UPGRADE_REPLY" version="1"/>
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: How should the enum be handled according to the comment 
+	 below? -->
+    <comment>
+      In version 2 a new requestspecific errorcode:
+    </comment>
+
+    <enum name="UpgradeStatus">
+      <enumVal name="UPGRADE_MUST_CHOOSE_REGION" value="0xF1"/>
+    </enum>
+
+  </replyPacket>
+
+
+  <reqPacket name="NAV_VECTOR_MAP_REQ" version="1">
+
+    <comment>
+      This packet is use to request a vector map chunk according to some
+      arcane, unknown standards.
+    </comment>
+
+    <param id="2400" 
+	   name="VectorMapRequest" 
+	   shortname="vectorMapRequest" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The Request string."/>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_VECTOR_MAP_REPLY" version="1" >
+
+    <comment>
+      This packet is use to deliver a vector map chunk from the server.
+    </comment>
+
+    <param id="2500" 
+	   name="VectorMapRequest" 
+	   shortname="vectorMapRequest" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The Request string."/>
+    <param id="2501" 
+	   name="VectorMapData" 
+	   shortname="vectorMapData" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The reply data."/>
+  </replyPacket>
+
+  <reqPacket name="NAV_MULTI_VECTOR_MAP_REQ" version="1">
+
+    <comment>
+      This request is for multiple vector maps from the server limited by total size.
+    </comment>
+
+    <param id="4600" 
+	   name="Start offset" 
+	   shortname="startOffset" 
+	   type="uint32" 
+	   defaultVal="0 "
+	   description="Start offset."/>
+    <param id="4601" 
+	   name="Max size" 
+	   shortname="maxSize" 
+	   type="uint32" 
+	   defaultVal="2048 "
+	   description="Maximum number of bytes in reply."/>
+    <param id="4602" 
+	   name="Request strings" 
+	   shortname="requestStrings" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Zero terminated specstrings."/>
+  </reqPacket>
+
+  <replyPacket name="NAV_MULTI_VECTOR_MAP_REPLY" version="1" >
+
+    <comment>
+      This reply has multiple vector maps from the server.
+    </comment>
+
+    <param id="4700" 
+	   name="Data" 
+	   shortname="data" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Blob of data."/>
+    <!-- Oh no!, not teh Blob! -->
+
+  </replyPacket>
+
+  <reqPacket name="NAV_BINARY_TRANSFER_REQ" version="1" >
+
+    <comment>
+      Request to transfer some data from client and get it at the server end.
+    </comment>
+
+    <param id="2600" 
+	   name="Save as" 
+	   shortname="saveAs" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="0 print. 1 save as file. 2 save over socket."/>
+    <param id="2601" 
+	   name="Filename" 
+	   shortname="filename" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The save-as file name."/>
+    <param id="2602" 
+	   name="Hostname" 
+	   shortname="hostname" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The host:port to connect to."/>
+    <param id="2603" 
+	   name="Data" 
+	   shortname="data" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The stuff to save. If more than one
+			parameter is present the ones following the first must be
+			appended to the first byte array."/>
+  </reqPacket>
+
+  <packet name="NAV_BINARY_TRANSFER_REPLY" version="1">
+
+    <comment>
+      Reply to transfer some data to client.
+    </comment>
+
+    <param id="2700" 
+	   name="Destination" 
+	   shortname="destination" 
+	   type="byte" 
+	   defaultVal="- "
+	   description="0 send this reply to GUI."/>
+    <param id="2701" 
+	   name="Data" 
+	   shortname="data" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The stuff."/>
+
+  </packet>
+  <reqPacket name="NAV_NOP_REQ" version="1" >
+
+    <comment>
+      Request that does nothing. Only global parameters are handled.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_NOP_REPLY" version="1" >
+
+    <comment>
+
+      Reply that contains nothing but global parameters.
+
+    </comment>
+
+    <!-- I want to see version 2 of this reply... -->
+
+  </replyPacket>
+
+  <reqPacket name="NAV_TOP_REGION_REQ" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This request must contain a TopRegionChecksum parameter, see Section
+      \ref{TopRegionChecksum}, and a Language of client, see Section
+      \ref{LanguageClient}, parameter.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_TOP_REGION_REPLY" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      Reply with a top region list. The reply must contain a TopRegionChecksum
+      parameter along with the TopRegionData parameter.
+    </comment>
+
+    <enum name="TopRegionType" >
+      <enumVal name="country" value="0" />
+      <enumVal name="state" value="1" />
+      <enumVal name="internationalRegion" value="2" />
+      <enumVal name="metaregion" value="3" />
+    </enum>
+
+    <struct name="TopRegion" >
+      <member name="id"
+	      shortname="id"
+	      type="uint32"
+	      comment="Top region id."
+	      />
+      <member name="type"
+	      shortname="type"
+	      type="uint8"
+	      enum="TopRegionType"
+	      comment="Top region type." />
+      <member name="name"
+	      shortname="name"
+	      type="string"
+	      comment="Name of  top region."
+	      />
+    </struct>
+
+    <param id="3100" 
+	   name="TopRegionData" 
+	   shortname="topRegionData"
+	   enum="TopRegion[]" 
+	   defaultVal="- "
+	   description="A top region list. Consists of a number of top
+			regions."
+           />
+
+  </replyPacket>
+  <reqPacket name="NAV_LATEST_NEWS_REQ" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This request must contain a Latest news crc parameter, see Section
+      \ref{Latest news crc}, and a Language of client, see Section
+      \ref{LanguageClient}, parameter..
+    </comment>
+  </reqPacket>
+
+  <replyPacket name="NAV_LATEST_NEWS_REPLY" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      Reply with the latest news data. The reply must contain a Latest news crc
+      parameter. In this version the latest news data is an image.
+    </comment>
+
+    <param id="3300" 
+	   name="Latest news data" 
+	   shortname="latestNewsData" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="A byte array with the latest news data."/>
+  </replyPacket>
+
+  <reqPacket name="NAV_CATEGORIES_REQ" version="1" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This request must contain a Categories crc parameter, see Section
+      \ref{Categories crc}, and a Language of client, see Section
+      \ref{LanguageClient}, parameter.
+    </comment>
+
+  </reqPacket>
+
+  <reqPacket name="NAV_CATEGORIES_REQ" version="2" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This version of the request may also include a position parameter which
+      the server may use to get a specific category list for the client's 
+      area. See description of parameter 4308 in Section 
+      \ref{Category position}.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_CATEGORIES_REPLY" version="1">
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+
+      Reply with the Categories data. The reply must contain a Categories crc
+      parameter.
+
+    </comment>
+    <struct name="CategoryData"  >
+      <member name="name"
+	      type="string"
+	      comment="String to send to server."
+	      />
+      <member name="userFriendlyName"
+	      type="string"
+	      comment="Name to show user."
+	      />
+    </struct>
+
+    <param id="3500" 
+	   name="Categories data" 
+	   shortname="categoriesData" 
+	   type="CategoryData[]" 
+	   defaultVal="- "
+	   description="A list of categories pairs."
+           />
+
+  </replyPacket>
+
+  <replyPacket name="NAV_CATEGORIES_REPLY" version="2" >
+    <derivesFrom name="NAV_CATEGORIES_REPLY" version="1" />
+
+    <param id="3501" 
+	   name="filenames data" 
+	   shortname="filenamesData" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="A list of filenames."
+           />
+    
+
+    <param id="3502"
+           name="category id list"
+           shortname="categoryIdList"
+           type="uint16[]"
+           defaultVal="- "
+           description="A list of category ids. An ID with 0xFFFF indicates
+			invalid category id."
+           />
+  </replyPacket>
+
+
+  <reqPacket name="NAV_CALLCENTER_LIST_REQ" version="1" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This request must contain a CallCenter Checksum parameter, see Section
+      \ref{CallCenter Checksum}, and a Language of client, see Section
+      \ref{LanguageClient}, parameter.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_CALLCENTER_LIST_REPLY" version="1" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO1: According to the comment below there are missing params in 
+	 this request. This needs to be fixed. -->
+    <!-- TODO2: Fix description in param 3700, callcenter and callcenter-list
+	 should be surrounded by < and > -->
+    <comment>
+      Reply with the CallCenter list. The reply must contain a CallCenter Checksum
+      parameter.
+    </comment>
+
+    <param id="3700" 
+	   name="CallCenter list" 
+	   shortname="callCenterList" 
+	   type="string" 
+	   defaultVal="- "
+	   description="A string with the call center phone numbers and names.
+			Format:
+			callcenter-list :=
+			callcenter [, callcenter-list ]
+			callcenter := number ; name
+			"/>
+
+  </replyPacket>
+
+  <reqPacket name="NAV_SERVER_LIST_REQ" version="1" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <comment>
+      This request must contain a Server List Checksum parameter, see Section
+      \ref{Server List Checksum}.
+    </comment>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_SERVER_LIST_REPLY" version="1" >
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: According to the comment below there are missing params in this
+	 request. This needs to be fixed. -->
+    <!-- TODO2: Fix description in param 3900, AlternativeServerList and 
+	 ServerGroupList and so on should be surrounded by < and > -->
+    <comment>
+      Reply with the Server List. The reply must contain a Server List Checksum
+      parameter.
+    </comment>
+
+    <param id="3900" 
+	   name="Server List" 
+	   shortname="serverList" 
+	   type="string" 
+	   defaultVal="- "
+	   description="A string with the Server List.
+			Must always be accompanied by a Server List Checksum parameter.
+			Format:
+			AlternativeServersList := ServerGroupList
+			ServerGroupList := ServerList [ ; ServerList ]
+			ServerList := Server [ , Server ]
+			Server := FQDN : port
+			"
+	   />
+
+  </replyPacket>
+
+  <reqPacket name="NAV_NEW_PASSWORD_REQ" version="1">
+
+    <param id="4000" 
+	   name="New password" 
+	   shortname="newPassword" 
+	   type="string" 
+	   defaultVal="- "
+	   description="String parameter sent from client that wants to set
+			the password of the user."/>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_NEW_PASSWORD_REPLY" version="1" >
+    <comment>
+      Reply with User Password parameter, see Section \ref{User Password}.
+    </comment> 
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <reqPacket name="NAV_SERVER_INFO_REQ" version="1">
+    <comment>
+      Request various crcs, user credentials etc.
+    </comment>
+  </reqPacket>
+
+  <reqPacket name="NAV_SERVER_INFO_REQ" version="2">
+    <derivesFrom name="NAV_SERVER_INFO_REQ" version="1" />
+    <comment>
+      Request various crcs, user credentials etc.
+
+      This version of the request may also include a position parameter which the
+      server may use to get a specific category list for the client's area.
+    </comment>
+   
+    <!-- param 4308 is re-defined in NAV_SERVER_INFO_REPLY v.4.
+
+	 This works since params are not parsed to stand-alone typed
+	 entities but rather request/reply packets trigger parsing with
+	 both param id and type information.
+
+         But it is wrong usage of the API and introduce unwanted
+         dependencies. Server team is informed and might request it to be
+         changed.
+    -->
+
+    <param id="4308"
+	   type="Coordinate"
+           name="Position for category list."
+	   shortname="positionForCategoryList"
+           defaultVal="- "
+           description="Position for category list. Category lists and trees are customized for different markets/regions." />
+  </reqPacket>
+
+  <reqPacket name="NAV_SERVER_INFO_REQ" version="3">
+    <derivesFrom name="NAV_SERVER_INFO_REQ" version="2" />
+    <comment>
+      Request various crcs, user credentials etc.
+
+      Request is same as v.2, reply is different.
+    </comment>
+  </reqPacket>
+
+  <reqPacket name="NAV_SERVER_INFO_REQ" version="4">
+    <derivesFrom name="NAV_SERVER_INFO_REQ" version="3" />
+    <comment>
+      Request various crcs, user credentials etc.
+
+      Request is same as v.2, reply is different.
+    </comment>
+  </reqPacket>
+
+
+  <replyPacket name="NAV_SERVER_INFO_REPLY" version="1">
+    <!-- TODO: add param 21 - bit rights. Auto-generation of array
+         parsing code seems to be broken (gets stuck in endless loop) -->
+    <comment>
+      Reply to NAV_SERVER_INFO_REQ.
+    </comment>
+
+    <param id="4300"
+           type="uint32"
+           name="TopRegionChecksum"
+	   shortname="topRegionChecksum"
+           defaultVal="- "
+           description="The current checksum of the top region list either in
+			server or client."/>
+
+    <param id="4301"
+           type="uint32"
+           name="Subscription time left (s)"
+	   shortname="subscriptionTimeLeftSeconds"
+           defaultVal="- "
+ 	   description="Uint32 parameter sent from the server to the client 
+			detailing how many seconds of the user's subscription
+			remains. See also Transactions left."/>
+
+    <param id="4302"
+           type="uint32"
+           name="Latest news crc"
+	   shortname="latestNewsCrc"
+           defaultVal="- "
+           description="A uint32 checksum for the client's Latest News. Deprecated - used in start-up flows in WF Navigator &lt;= 6."/>
+
+    <param id="4303"
+           type="uint32"
+           name="Categories crc"
+	   shortname="categoriesCrc"
+           defaultVal="- "
+           description="A uint32 checksum for the last downloaded Categories 
+			file sent from client to server and from server to client."/>
+
+    <param id="4305"
+           type="uint32"
+           name="CallCenter Checksum"
+	   shortname="callCenterChecksum"
+           defaultVal="- "
+           description="Uint32 parameter sent from client to server and from 
+			server to client containing the checksum of the latest received CallCenter List parameter. See NAV_CALLCENTER_LIST_REQ."/>
+
+    <param id="4306"
+           type="string"
+           name="Public User Name"
+	   shortname="publicUserName"
+           defaultVal="- "
+           description="The user name the user must use to login to our web pages. May differ from internal user id - the user may be able to choose a good user name and change it - but the internal user id is constant."/>
+
+    <param id="4307"
+           type="uint32"
+           name="Server List Checksum"
+	   shortname="serverListChecksum"
+           defaultVal="- "
+           description="Uint32 parameter containing the servers list checksum.
+			Sent from client to server and from server to client. See NAV_SERVER_LIST_REQ."/>
+
+    <!-- <paramRef id="21"/> <!- - rights bits -->
+    <paramRef id="23"/> <!-- old style "new version" indicator. -->
+    <paramRef id="25"/> <!-- server's clock time in UTC -->
+    <paramRef id="5204"/> <!-- PIN crc -->
+  </replyPacket>
+
+
+  <replyPacket name="NAV_SERVER_INFO_REPLY" version="2" >
+    <derivesFrom name="NAV_SERVER_INFO_REPLY" version="1" />
+    
+    <comment>
+      Reply to NAV_SERVER_INFO_REQ v.2.
+    </comment>
+
+    <paramRef id="4903"/> <!-- Favorites CRC -->
+    <paramRef id="27"/> <!-- Latest News Id -->
+  </replyPacket>
+
+  <replyPacket name="NAV_SERVER_INFO_REPLY" version="3" >
+    <derivesFrom name="NAV_SERVER_INFO_REPLY" version="2" />
+    <comment>
+      Reply to NAV_SERVER_INFO_REQ v.3.
+    </comment>
+
+    <paramRef id="28"/><!-- Search desc crc -->
+  </replyPacket>
+
+  <replyPacket name="NAV_SERVER_INFO_REPLY" version="4" >
+    <derivesFrom name="NAV_SERVER_INFO_REPLY" version="3" />
+    <comment>
+       Reply to NAV_SERVER_INFO_REQ v.4.
+    </comment>
+
+    <param id="4308"
+           type="bool"
+           name="Force client upgrade"
+           shortname="forceClientUpgrade"
+           defaultVal="- "
+           description="True if upgrade to new client version should be forced."/>
+
+    <param id="4309"
+           type="string"
+           name="Upgrade id"
+           shortname="upgradeId"
+           defaultVal="- "
+           description="String identifying the latest version in the platform market. May be an URI, a package name, an id etc. Semantics of the id is efined by the client who is also responsible for triggering download using the platform's normal mechanism."/>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <reqPacket name="NAV_WHOAMI_REQ" version="1">
+    <comment>
+      Sent from client when it doesn't have any User (ID | Login | UIN) and wants to
+      check with the server if there is any user associated with this phone.
+      The server returns the User Login and User UIN for the user already associated
+      with the phone. If no user is associated with the phone the server may create
+      a new user for it and return the User Login, User UIN, and User Password.
+
+      The client must send User Licence (key), Section \ref{User Licence (key)},
+      to identify phone. Also Client type is needed when creating a new user.
+
+      See also Section \ref{Authentication of client} about when this request
+      is handled in authorization.
+
+      If no user is associated with the phone then a new user is created if:
+
+      \begin{itemize}
+      \item The user(s) with the Licence Key is looked up and:
+      \begin{enumerate}
+      \item No users found with the Licence Key and \\
+      ClientType is MODII and client WFST is TRIAL or
+      ClientType is MODI and client WFST is TRIAL or SILVER \\
+      a new user is created with
+      random logonID and Password, Licence Key is added to user,
+      WFST set to TRIAL, add region access with the CreateRegionID
+      and CreateTime for the ClientType.
+      If ClientType has CreateTransactionDays user is set to transaction
+      days based and CreateTransactionDays nbr days added to user.
+      UIN, logonID and Password returned to client.
+      \item One(1) user found with the Licence Key the User Login and User UIN is
+      returned to client.
+      \item Two or more (2+) users found with the same Licence Key.
+      Return error to client.
+      \end{enumerate}
+      \end{itemize}
+
+    </comment>
+  </reqPacket>
+
+  <replyPacket name="NAV_WHOAMI_REPLY" version="1">
+    <comment>
+      Reply with status and possibly User parameters.
+    </comment>
+  </replyPacket>
+
+
+  <!-- ============================================================= -->
+  <reqPacket name="NAV_TRACK_REQ" version="1">
+    <comment>
+      Request with a list of coordinates to store in server. Also PIN(s) to
+      allow access to the stored coordinates.
+    </comment>
+
+    <struct name="TrackPoint" >
+      <member name="lat"
+	      type="int32"
+	      comment="latitude"
+	      />
+      <member name="lon"
+	      type="int32"
+	      comment="longitude"
+	      />
+      <member name="dist"
+	      type="uint32"
+	      comment="Distance from last TrackPoint in centimetres."
+	      />
+      <member name="speed"
+	      type="uint16"
+	      comment="Speed in m/s * 32."
+	      />
+      <member name="heading"
+	      type="uint16"
+	      comment="Heading."
+	      />
+      <member name="time"
+	      type="uint32"
+	      comment="Time when Track point was made. If less than 100000000 then
+		       used as time before now."
+	      />
+      <member name="comment"
+	      type="string"
+	      comment="String with extra info."
+	      />
+    </struct>
+
+    <param id="5200" 
+	   name="TrackPoints" 
+	   shortname="trackPoints" 
+	   type="TrackPoint[]" 
+	   defaultVal="- "
+	   description="One or more TrackPoint(s) with the following content.
+			Multiple 5200 TrackPoints params may be sent."
+           />
+    <param id="5201" 
+	   name="PINIDSync" 
+	   shortname="pinIdSync" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="PIN IDs to sync. IDs of PINs that the client has."/>
+    <param id="5202" 
+	   name="PINIDDel" 
+	   shortname="pinIdDel" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="PIN IDs to delete. IDs of PINs that the client has
+			deleted."/>
+
+    <struct name="PIN" >
+      <member name="id"
+	      type="uint32"
+	      comment="The ID."
+	      />
+      <member name="pin"
+	      type="string"
+	      comment="PIN as string."
+	      />
+      <member name="comment"
+	      type="string"
+	      comment="Comment about PIN"
+	      />
+      
+    </struct>    
+
+    <struct name="TrackReqSetting">
+      <member name="numPositionsToReturn" type="uint32"/>
+      <member name="startTimeUTC" type="uint32"/>
+      <member name="endTimeUTC" type="uint32"/>
+    </struct>
+
+    <param id="5203" 
+	   name="PINAdd" 
+	   shortname="pinAdd" 
+	   type="PIN[]" 
+	   defaultVal="- "
+	   description="List of PINs to add. See below for declaration of PIN."
+           />
+
+    <paramRef id="5204"/>
+    <param id="5205" 
+	   name="TrackReq" 
+	   shortname="trackReq" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The track_data value string to get position for."/>
+    <param id="5206" 
+	   name="TrackReqSetting" 
+	   shortname="trackReqSetting" 
+	   type="TrackReqSetting" 
+	   defaultVal="- "
+	   description="Settings for TrackReq. First an uint32 that is the
+			maximum number of positions to return. Default 1.
+			Then startTime in UTC, default 0.
+			Then enTime in UTC, default MAX_UINT32."/>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_TRACK_REPLY" version="1">
+    <comment>
+      Reply with status.
+    </comment>
+    <param id="5302" 
+	   name="PINIDDel" 
+	   shortname="pinIdDel" 
+	   type="uint32[]" 
+	   defaultVal="- "
+	   description="PIN IDs to delete. IDs of PINs that the client has
+			to delete."/>
+    <param id="5303" 
+	   name="PINAdd" 
+	   shortname="pinAdd" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="List of PINs to add."/>
+    <param id="5304" 
+	   name="PINCRC" 
+	   shortname="pinCrc" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The CRC for the PINs."/>
+    <param id="5305" 
+	   name="TrackReply" 
+	   shortname="trackReply" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The list of matched positions for the request in 5205.
+			Is a list of TrackPoint(s) as defined in 5200."/>
+  </replyPacket>
+
+  <reqPacket name="NAV_TUNNEL_DATA_REQ" version="1">
+    <comment>
+      Request to the server including data transfer. The request is then answered
+      with appropriate data. Used for tunneling data over Nav2.
+    </comment>
+
+    <struct name="Destination" >
+      <member name="type"
+	      type="uint32"
+	      comment="Type, 0 = conent window data."
+	      />
+      <member name="url"
+	      type="string"
+	      comment="Target URL to download."
+	      />
+    </struct>
+
+    <param id="5400" 
+	   name="Destinations" 
+	   shortname="destinations" 
+	   type="Destination[]" 
+	   defaultVal="- "
+	   description="Destinations"
+           />
+    <param id="5401" 
+	   name="Data" 
+	   shortname="data" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The data."/>
+    <!-- Oh, THE data. -->
+  </reqPacket>
+
+  <replyPacket name="NAV_TUNNEL_DATA_REPLY" version="1">
+    <comment>
+      Reply to transfer some data to client.
+    </comment>
+    <struct name="Destination" >
+      <member name="type"
+	      type="uint32"
+	      comment="Type, 0 = content window data."
+	      />
+      <member name="url"
+	      type="string"
+	      comment="Target URL to download."
+	      />
+    </struct>
+    <param id="5500" 
+	   name="Destination" 
+	   shortname="destination" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Destinations"
+           />
+    <param id="5501" 
+	   name="Data" 
+	   shortname="data" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="The data."/>
+  </replyPacket>
+
+  <reqPacket name="NAV_COMBINED_SEARCH_REQ" version="1">
+    <comment>
+      Request to the server for a combined search.
+    </comment>
+
+    <paramRef id="6"/>
+    <paramRef id="1201"/>
+    <paramRef id="1202"/>
+    <paramRef id="1203"/>
+    <paramRef id="1204"/>
+    <paramRef id="1205"/>
+    <paramRef id="1000"/>
+
+    <param id="5600" 
+	   name="Start index" 
+	   shortname="startIndex" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The index of the first match in the reply."/>
+    <param id="5601" 
+	   name="Round" 
+	   shortname="round" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The search round. First round \emph{0} is the fast
+			round, round \emph{1} is external search and slow."/>
+    <param id="5602" 
+	   name="Heading" 
+	   shortname="heading" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The specific heading, from previous reply, to search
+			in. \emph{-1} means all headings."/>
+    <param id="5603" 
+	   name="Max Nbr Search Matches" 
+	   shortname="maxNbrSearchMatches" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The reply full limit."/>
+    <param id="5604" 
+	   name="Distance" 
+	   shortname="distance" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The radius in meters from search position in param 1000."/>
+  </reqPacket>
+
+  <reqPacket name="NAV_COMBINED_SEARCH_REQ" version="2" >
+    <derivesFrom name="NAV_COMBINED_SEARCH_REQ" version="1" />
+    <comment>
+      Extended version 1 of this request with parameter 1209, which is a boolean.
+      This parameter determines if the category string ( param 1204 ) should be used for searching
+      for category names to search in. The search for matching category names is done
+      using the language specified. If this parameter is missing or is false, the
+      category string must be in english and must be the same as the one from the
+      category list.
+      There is also a new paramater, the category ID.
+    </comment>
+    <!-- SERVER CHECK NEEDED tex revision 28200ba3a7a7 -->
+    <!-- TODO: Why is param 1209 out commented? Remove or fix.-->
+    <!-- <paramRef id="1209"/> -->
+    <param id="5605" 
+	   name="Category ID" 
+	   shortname="categoryId" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="Category ID to use when searching, this is prefered over
+			category name when using the category list to search.
+			This item must be used instead of the category name ( param 1204 ) when searching
+			for an exact category ( when selecting it from the list )."
+           />
+  </reqPacket>
+
+
+  <replyPacket name="NAV_COMBINED_SEARCH_REPLY" version="1" >
+    <comment>
+      Reply to a combined search.
+      First heading is in param 5700, second heading is in 5702 and so on.
+      Then in 5701 is regions for 5700, in 5703 is regions for 5702 and so on.
+      Params 5700 to 5750 are reserved for heading replies.
+    </comment>
+
+    <struct name="SearchItem" >
+      <member name="type"
+	      type="byte"
+	      comment="Search type"
+	      />
+      <member name="subType"
+	      type="byte"
+	      comment="Search sub type."
+	      />
+      <member name="id"
+	      type="string"
+	      comment="MC2 internal id of this match."
+	      />
+      <member name="name"
+	      type="string"
+	      comment="Name of this match."
+	      />
+      <member name="image"
+	      type="string"
+	      comment="Image for match."
+	      />
+      <member name="lat"
+	      type="int32"
+	      comment="Latitude of match."
+	      />
+      <member name="lon"
+	      type="int32"
+	      comment="Longitude of match."
+	      />
+      <member name="nbrRegions"
+	      type="byte"
+	      comment="Number of regions"/>
+      <member name="regionTable"
+	      type="uint16[]"
+	      size="@nbrRegions"
+	      comment="Region table."
+	      />
+    </struct>
+    <struct name="Heading" >
+      <member name="headingNumber"
+	      type="uint32"
+	      comment="Heading number."
+	      />
+      <member name="listType"
+	      type="uint32"
+	      comment="List type, 0 = item matches, 1 = area matches"
+	      />
+      <member name="startIndex"
+	      type="uint32"
+	      comment="Start index of matches."
+	      />
+      <member name="totalNumMatches"
+	      type="uint32"
+	      comment="Total number of matches"
+	      />
+      <member name="matches"
+	      type="SearchItem[]"
+	      size="@totalNumMatches"
+	      comment="Search matches."
+	      />
+    </struct>
+
+    <!-- This special wrapper takes a single parameter and turns it into an array -->
+    <!-- of items of the same type. It does this by increasing the id by stride -->
+    <!-- until there is no more params.   -->
+    <param id="5700" 
+	   name="Heading" 
+	   arrayStride="2"
+	   arrayEnd="5750"
+	   shortname="headings" 
+	   type="Heading[]" 
+	   defaultVal="-"
+	   description="The first Heading with it's reply matches.
+			First an uint32 with heading number, uint32 with type of list 0x0 then item
+			matches and 0x1 if area matches in the list,
+			then an uint32 with index of first match
+			followed by an uint32 with total number of matches for the search.
+			Then a list of matches.
+			The area matches are described in Section \ref{Area matches} with an image
+			string after the name string."/>
+
+
+    <param id="5701" 
+	   name="Match regions" 
+	   arrayStride="2"
+	   arrayEnd="5750"
+	   shortname="matchRegions" 
+	   type="SearchRegion[]" 
+	   defaultVal="- "
+	   description="List of Search regions. The order of the Regions are
+			their index matches.
+			The region structure is defined as in Section \ref{Search regions} except
+			for Search location type which is 4 bytes as released clients erroneously
+			implemented it so."/>
+
+  </replyPacket>
+
+  <replyPacket name="NAV_COMBINED_SEARCH_REPLY" version="2" >
+    <derivesFrom name="NAV_COMBINED_SEARCH_REPLY" version="1"/>
+    <comment>
+      In version 2 of the reply,there is an uint32 after total number of matches in
+      the heading. This integer describes the number of top hits in the heading.
+      After the top this integer there are two strings that describes what to show
+      above advertisement hits and above the rest of the results. The first string is
+      the string to show above advertisement and the second if for the rest of the
+      results.
+      In addition two these two strings there is a new parameter param 6000 that contains two strings for
+      the first heading view, i.e what to show above top hits advertisements and for
+      the rest of the results.
+
+      The item structure has a byte directly after the sub type, which has value
+      1 if the item is an advertisement hit.
+    </comment>
+  </replyPacket>
+
+  <reqPacket name="NAV_SEARCH_DESC_REQ" version="1">
+    <comment>
+      This request must contain a Language of client, see Section
+      \ref{LanguageClient}, parameter.
+    </comment>
+
+    <paramRef id="6"/>
+  </reqPacket>
+
+  <reqPacket name="NAV_SEARCH_DESC_REQ" version="2">
+    <derivesFrom name="NAV_SEARCH_DESC_REQ" version="2" />
+    <comment>
+      With this version of the request a localized description of the type 
+      of search hit is included in the reply.
+    </comment>
+    
+  </reqPacket>
+
+  <reqPacket name="NAV_SEARCH_DESC_REPLY" version="1">
+    <comment>       
+      Reply with combined search description. The reply must contain a crc
+      parameter, paramID 28, along with the SearchHitType parameter.
+    </comment>
+    <struct name="SearchHitType" >
+      <member name="round"
+	      type="uint32"
+	      comment="What round hit belongs too."
+	      />
+      <member name="heading"
+	      type="uint32"
+	      comment="What heading number it is."
+	      />
+      <member name="name"
+	      type="string"
+	      comment="Name of search hit type."
+	      />
+      <member name="topRegionId"
+	      type="uint32"
+	      comment="Top region id of search hit type, MAX_UINT32 if none."
+	      />
+      <member name="imageName"
+	      type="string"
+	      comment="Name of image for search hit type."
+	      />
+    </struct>
+    
+    <paramRef id="28"/>
+
+    <param id="5900" 
+	   name="SearchHitType" 
+	   shortname="searchHitType" 
+	   type="SearchHitType[]" 
+	   defaultVal="- "
+	   description="A Search Hit type list. Consists of a number of Search
+			Hit Types."/>
+  </reqPacket>
+
+  <reqPacket name="NAV_SEARCH_DESC_REPLY" version="2">
+    <comment>       
+      Reply with combined search description. The reply must contain a crc
+      parameter, paramID 28, along with the SearchHitType parameter. 
+      Unlike v.1 this reply also includes a localized description of the type 
+      of each search hit.
+    </comment>
+    <struct name="SearchHitType" >
+      <member name="round"
+	      type="uint32"
+	      comment="What round hit belongs too."
+	      />
+      <member name="heading"
+	      type="uint32"
+	      comment="What heading number it is."
+	      />
+      <member name="name"
+	      type="string"
+	      comment="Name of search hit type."
+	      />
+      <member name="type"
+	      type="string"
+	      comment="The type of search hit, localized"
+	      />
+      <member name="topRegionId"
+	      type="uint32"
+	      comment="Top region id of search hit type, MAX_UINT32 if none."
+	      />
+      <member name="imageName"
+	      type="string"
+	      comment="Name of image for search hit type."
+	      />
+    </struct>
+    
+    <paramRef id="28"/>
+
+    <param id="5900" 
+	   name="SearchHitType" 
+	   shortname="searchHitType" 
+	   type="SearchHitType[]" 
+	   defaultVal="- "
+	   description="A Search Hit type list. Consists of a number of Search
+			Hit Types."/>
+  </reqPacket>
+
+  <!-- hkin stuff ends here -->
+
+  <!-- Global params for Category Tree -->
+  <globalParams>
+        <param id="4308"
+           name="Pos for categories"
+	   shortname="posForCategories"
+           type="Coordinate"
+           defaultVal="- "
+           description=""
+           />
+
+    <param id="6500" 
+  	   name="CategoryTreeCrc" 
+	   shortname="categoryTreeCrc" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The crc from a previous NAV\_LOCAL\_CATEGORY\_REPLY. Send 
+                        empty attribute if no crc is available."/>
+
+  </globalParams>
+
+  <reqPacket name="NAV_LOCAL_CATEGORY_TREE_REQ" version="1" >
+
+    <comment>
+      Request to get the category tree for the specified location. This request 
+      contains a Category tree crc parameter, a Language of client, see Section \ref{LanguageClient}, 
+      parameter, a Category tree version parameter, and a position parameter which the
+      server use to get a specific category tree for the client's area. See 
+      description of parameter 4308 in Section \ref{Category position}.
+    </comment>
+
+  <paramRef id="6"/>
+  <paramRef id="4308"/>
+  <paramRef id="6500"/>
+
+    <param id="6501" 
+  	   name="CategoryTreeVersion" 
+	   shortname="categoryTreeVersion" 
+	   type="uint16" 
+	   defaultVal="- "
+	   description="The version format to use in the 
+                        NAV\_LOCAL\_CATEGORY\_REPLY."/>
+
+  </reqPacket>
+
+  <replyPacket name="NAV_LOCAL_CATEGORY_TREE_REPLY" version="1">
+
+    <comment>
+     Reply with the Category tree for the specified location. The reply has an 
+     optional Categories crc parameter that is set if the request succeedes.
+     The category tree data is sent in the category table, lookup table and string 
+     table parameters.
+    </comment>
+
+    <paramRef id="6500"/>
+
+    <param id="6502" 
+	   name="Category table" 
+	   shortname="categoryTable" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Contains information about categories (sub categories, 
+                        offset of name and icon in the string table)"
+           />
+
+    <param id="6503" 
+	   name="Lookup table" 
+	   shortname="lookupTable" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="Used to get the byte offset of a category in the category
+                        table."
+           />
+    
+    <param id="6504"
+           name="string table"
+           shortname="stringTable"
+           type="uint8[]"
+           defaultVal="- "
+           description="Table containing category names and icon names."
+           />
+
+    <param id="6505"
+           name="crc ok"
+           shortname="crcOK"
+           type="bool"
+           defaultVal="- "
+           description="Indicates that the crc sent in the request matched the 
+                        latest version. No new category tree is sent when this 
+                        parameter is true."
+           />
+  </replyPacket>
+
+  <reqPacket name="NAV_ONE_SEARCH_REQ" version="1" >
+    <comment>
+    This request must contain a Language of client, see Section
+    7.1, parameter.
+    </comment>
+
+    <param id="6800" 
+  	   name="SearchMatchQuery" 
+	   shortname="searchMatchQuery" 
+	   type="string" 
+	   defaultVal="- "
+	   description="Text to find matches, if not sent or empty it is not used."
+    />
+
+    <param id="6801" 
+  	   name="CategoryIDs" 
+	   shortname="categoryIDs" 
+	   type="int32[]" 
+	   defaultVal="- "
+	   description="The categories to limit search to, not used if not sent or empty."
+    />
+
+    <param id="6802" 
+  	   name="SearchPosition" 
+	   shortname="searchPosition" 
+	   type="Coordinate" 
+	   defaultVal="- "
+	   description="The position (MC2 format) to find matches around."
+    />
+
+    <param id="6803" 
+  	   name="SearchRadius" 
+	   shortname="searchRadius" 
+	   type="int32" 
+	   defaultVal="- "
+	   description="The maximum distance from the SearchPosition to find matches at."
+    />
+
+    <param id="6804" 
+  	   name="MaxNumberMatches" 
+	   shortname="maxNbrMatches" 
+	   type="int32" 
+	   defaultVal="- "
+	   description="The maximum number of  matches to return."
+    />
+
+    <param id="6805" 
+  	   name="SearchRound" 
+	   shortname="searchRound" 
+	   type="int32" 
+	   defaultVal="- "
+	   description="The search round. First round 0 is the fast
+round, round 1 is external search and slow."
+    />
+
+    <param id="6806" 
+  	   name="IncludeInfoFields" 
+	   shortname="includeInfoFields" 
+	   type="bool" 
+	   defaultVal="- "
+	   description="Default is to include InfoItems use this to turn it off if needed"
+    />
+
+    <enum name="SearchSortingTypeEnum" comment="Enum describing search sorting types.">
+     <enumVal name="DISTANCE_SORT" value="0x00"/>
+     <enumVal name="ALFA_SORT" value="0x01"/>
+   </enum>
+    <param id="6807" 
+  	   name="SearchSorting" 
+	   shortname="searchSorting" 
+	   type="int32" 
+	   enum="SearchSortingTypeEnum"
+	   defaultVal="- "
+	   description="In what order to return the matches. 0x00 distance_sort, 0x01 alfa_sort"
+    />
+
+  </reqPacket>
+
+  <reqPacket name="NAV_ONE_SEARCH_REQ" version="2" >
+    <derivesFrom name="NAV_ONE_SEARCH_REQ" version="1" />
+   
+    <comment>
+     Parameter 6802 is optional in this version of the request.
+     The location where the search should be performed is specified
+     by either sending parameter 6802 or parameter 6808 and 6809.
+    </comment>
+
+   <param id="6808" 
+  	   name="QueryLocation" 
+	   shortname="queryLocation" 
+	   type="string" 
+	   defaultVal="- "
+	   description="The city or area to search in"
+    />
+
+   <param id="6809" 
+  	   name="TopRegionId" 
+	   shortname="topRegionId" 
+	   type="uint32" 
+	   defaultVal="- "
+	   description="The top region to seach in"
+    />
+
+    <enum name="SearchTypeEnum" comment="Enum describing search types.">
+     <enumVal name="ALL" value="0x00"/>
+     <enumVal name="ADDRESS" value="0x01"/>
+   </enum>
+
+   <param id="6810" 
+  	   name="SearchType" 
+	   shortname="searchType" 
+	   type="int32"
+	   enum="SearchTypeEnum"
+	   defaultVal="- "
+	   description="What we are searching for, (0x00 = all, 0x01 = address). The type 'address' is intended for use with round 0. If not sent 'all' is used."
+    />
+
+ </reqPacket>
+
+  <replyPacket name="NAV_ONE_SEARCH_REPLY" version="1">
+
+    <comment>
+     Reply with either all the parameters below or an error reply.
+     </comment>
+
+     <param id="6900" 
+	   name="NbrMatches" 
+	   shortname="nbrMatches" 
+	   type="int32" 
+	   defaultVal="- "
+	   description="The number of matches in the Matches parameter."
+           />
+
+    <param id="6901" 
+	   name="TotalNbrMatches" 
+	   shortname="totalNbrMatches" 
+	   type="int32" 
+	   defaultVal="- "
+	   description="The total number of matches."
+           />
+    
+    <param id="6902"
+           name="SearchStringTable"
+           shortname="searchStringTable"
+           type="uint8[]"
+           defaultVal="- "
+           description="Byte array with string data."
+           />
+
+    <param id="6903"
+           name="AreaTable"
+           shortname="areaTable"
+           type="uint8[]"
+           defaultVal="- "
+           description="Byte array with areas."
+           />
+
+    <param id="6904"
+           name="InfoItemTable"
+           shortname="infoItemTable"
+           type="uint8[]"
+           defaultVal="- "
+           description="Byte array with DetailItems."
+           />
+
+    <param id="6905"
+           name="Matches"
+           shortname="matches"
+           type="uint8[]"
+           defaultVal="- "
+           description="Byte array with the Search Matches in order."
+           />
+  </replyPacket>
+
+  <enum name="PoiDetailEnum" comment="Enum describing the packet types">
+    <enumVal name="dont_show" value="0x0000"/>
+    <enumVal name="text" value="0x0001"/>
+    <enumVal name="street_address" value="0x0002"/>
+    <enumVal name="full_address" value="0x0003"/>
+    <enumVal name="phone_number" value="0x0004"/>
+    <enumVal name="url" value="0x0005"/>
+    <enumVal name="email" value="0x0006"/>
+    <enumVal name="poi_url" value="0x0007"/>
+    <enumVal name="poi_thumb" value="0x0008"/>
+    <enumVal name="average_rating" value="0x0009"/>
+    <enumVal name="description" value="0x000a"/>
+    <enumVal name="open_hours" value="0x000b"/>
+    <enumVal name="provider_info" value="0x000c"/>
+  </enum>
+
+  <enum name="PoiDetailContentEnum" comment="Enum describing the content type for each of the packet types">
+    <enumVal name="content_text" value="0x0000"/>
+    <enumVal name="content_phone_number" value="0x0001"/>
+    <enumVal name="content_url" value="0x0002"/>
+    <enumVal name="content_email_address" value="0x0003"/>
+    <enumVal name="content_integer" value="0x0004"/>
+    <enumVal name="content_float" value="0x0005"/>
+  </enum>
+
+  <reqPacket name="NAV_DETAIL_REQ" version="1">
+    <comment>
+      A request for additional information about items, sent
+      from client to server.
+    </comment>
+
+    <param id="7000" 
+	   name="DetailItemID" 
+	   shortname="detailItemId" 
+	   type="String" 
+	   defaultVal="- "
+	   description="String is Search item id."/>
+
+  </reqPacket>
+
+  <reqPacket name="NAV_DETAIL_REQ" version="2" >
+    <derivesFrom name="NAV_DETAIL_REQ" version="1" />
+   
+    <comment>
+     No changes compared to v1 request.
+     Added reviews and images in the response of v2.
+    </comment>
+  </reqPacket>
+
+  <replayPacket name="NAV_DETAIL_REPLY" version="1">
+
+    <comment>
+      A reply to an detail request, sent from the server to the client.
+    </comment>
+
+    <struct name="DetailItem">
+      <member name="item" type="string" comment="The MC2 internal id sent in the request."/>
+      <member name="nbr" type="uint16" comment="The number of type-key-value tuples for this item"/>
+      <member name="type" type="uint16" enum="PoiDetailEnum" comment="The type of information."/>
+      <member name="content_type" type="uint8" enum="PoiDetailContentEnum" comment="The type of information."/>
+      <member name="key" type="string" comment="String to be presented as first value or key."/>
+      <member name="value" type="string" comment="String to be presented as second value."/>
+    </struct>
+
+    <param id="7100" 
+	   name="DetailItems" 
+	   shortname="detailItems" 
+	   type="DetailItem[]" 
+	   defaultVal="- "
+	   description="List of DetailItems."/>
+
+  </replayPacket>
+  
+  <replayPacket name="NAV_DETAIL_REPLAY" version="2" >
+    <derivesFrom name="NAV_DETAIL_REPLAY" version="1" />
+   
+    <comment>
+     No changes compared to v1 request.
+     Added reviews and images in the response of v2.
+    </comment>
+
+    <struct name="ImagesStruct">
+      <member name="providerNameIndex" type="int32" comment="Index to the provider name in the string table"/>
+      <member name="providerImageIndex" type="int32" comment="Index to the provider image in string table"/>
+      <member name="nbrImageUrls" type="int16" enum="Number of image urls."/>
+      <member name="url" type="int32[]" enum="Index to image url in the string table."/>
+    </struct>
+
+    <struct name="ReviewsStruct">
+      <member name="providerNameIndex" type="int32" comment="Index to the provider name in the string table"/>
+      <member name="providerImageIndex" type="int32" comment="Index to the provider image in string table"/>
+      <member name="nbrReviews" type="int16" enum="Number of image urls."/>
+      <member name="review" type="ReviewStruct[]" enum="Index to image url in the string table."/>
+    </struct>
+
+    <struct name="ReviewStruct">
+      <member name="rating" type="int8" comment="Rating in this review."/>
+      <member name="dateIndex" type="int32" comment="Index to the date of the review in the string table."/>
+      <member name="reviewerIndex" type="int32" enum="Index to the user name which wrote the review in the string table."/>
+      <member name="reviewIndex" type="int32" enum="Index to the review in the string table."/>
+    </struct>
+
+    <param id="7101" 
+	   name="Images"
+	   shortname="images" 
+	   type="ImagesStruct" 
+	   defaultVal="- "
+	   description="List of Images."/>
+
+    <param id="7102" 
+	   name="Reviews" 
+	   shortname="reviews" 
+	   type="ReviewsStruct" 
+	   defaultVal="- "
+	   description="List of Reviews."/>
+
+    <param id="7103" 
+	   name="StringTable" 
+	   shortname="stringTable" 
+	   type="uint8[]" 
+	   defaultVal="- "
+	   description="String table."/>
+  </replayPacket>
+
+</serverFormat>
+

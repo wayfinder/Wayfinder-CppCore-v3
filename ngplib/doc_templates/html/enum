@@ -1,0 +1,15 @@
+{# we want anchor to arrays of this type too #}
+<a id="{{ enum.containing_struct }}[]"></a>
+<h2 id="{{ enum.containing_struct }}">{{ enum.containing_struct }} (enum)</h2>
+{{ enum.comment }}
+<br><br>
+{# The values are value = (name, value, comment) #}
+{% for value in enum.values %}
+{% if enum.containing_struct == "PacketTypeEnum" %}
+  <b><a href="#{{ value[0] }}">{{ value[0] }}</a></b><br>
+  {{ value[2] }}<br><br>
+{% else %}
+   <b>{{ value[0] }}</b><br>
+  {{ value[2] }}<br><br>
+{% endif %}
+{% endfor %}

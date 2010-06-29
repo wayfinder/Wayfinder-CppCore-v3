@@ -1,0 +1,32 @@
+<h2 id="{{ packet.name }}">{{ packet.name }}</h2>
+{{ packet.comment }}
+
+<br>
+
+{% if packet.params.values() %}
+<table border="1">
+<tr>
+<th>Id</h>
+<th>Name</th>
+<th>Type</th>
+<th>Default value</th>
+<th>Comment</th>
+{% for param in packet.params.values() %}
+<tr>
+<td><center>{{ param.id }}</center></td>
+<td><center>{{ param.name }}</center></td>
+<td><center><a href="#{{ param.type }}">{{ param.type }}</a></center></td>
+<td><center>{{ param.default }}</center></td>
+<td>{{ param.comment }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+<br>
+{% for enum in packet.enums.values() %}
+{% include "enum" %}
+{% endfor %}
+
+{% for struct in packet.structs.values() %}
+{% include "struct" %}
+{% endfor %}

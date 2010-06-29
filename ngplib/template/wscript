@@ -1,0 +1,12 @@
+def build(bld):
+    staticlib = bld.new_task_gen( 'cxx', 'staticlib' )
+    # We are only interested in specific sources,
+    # ignoring gzip and stuff for now
+    staticlib.source = ['NParamBlock.cpp', 'NavPacket.cpp', 'NParam.cpp']
+
+    staticlib.includes = '. ../gen/'
+    staticlib.target = 'ServersSharedNGP'
+    staticlib.install_path = None
+    staticlib.export_incdirs = '. ../gen/'
+    staticlib.uselib_local='ServersShared'
+    staticlib.defines = 'NGPLIB_SERVER'

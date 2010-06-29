@@ -1,0 +1,59 @@
+Usage: ./generator_cpp.py [code_type]
+Where:
+code_type	 "MC2" (server), "CC" (cppcore), "G" (generic)
+
+This will generate code in a map called NGP
+Use -h or --help for more information.
+
+To show a raw print out of what was parsed:
+$./generator_print.py
+
+
+======================================================================
+Documentation
+
+To generate documentation from the protocol specification use:
+$./generator_doc.py protocol.xml output.html
+
+This will generate HTML documentation from protocol.xml to output.html
+
+It requires a python module jinja2 to be installed. Jinja is a template
+rendering engine.
+
+You can find it here:
+http://jinja.pocoo.org/2/
+
+Ubuntu installation:
+sudo apt-get install python-jinja2
+
+Other systems might want to use:
+http://jinja.pocoo.org/2/documentation/intro#installation
+
+
+To build a render output other than HTML, you need to do the following:
+Change the following line in generator_doc.py
+          self.env = Environment(loader=FileSystemLoader(["./doc_templates/html"]))
+to use another path, something like "./doc_templates/asciidoc/" if you plan
+to generate asciidocs, then in that directory you create the same files
+as in doc_templates/html but add asciidoc style content in them.
+
+======================================================================
+MC2
+
+To test compile (run ./generator_cpp.py first):
+$make
+
+Test code can be found i ./test
+
+======================================================================
+C++ Core
+
+It is not possible to compile ngplib stand-alone - you need parts of the repos
+* Common (ssh://hg//home/is/hg/C++/Common).
+* CV3Full (ssh://hg//home/is/hg/C++/CV3Full)
+
+From CV3Full directory, run
+cook lot=linux ngplib
+
+Test code is among the Core regression tests
+(ssh://hg//home/is/hg/Core/RegTest/)

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- This file dictates the packets and which versions of them that will be -->
+<!-- generated.  -->
+
+<allowedPackets>
+  <packet name="NAV_NOP_REQ" version="1"/>
+  <packet name="NAV_MESSAGE_REQ" version="1"/>
+  <packet name="NAV_REV_GEOCODING_REQ" version="1"/>
+  <packet name="NAV_BINARY_TRANSFER_REQ" version="1"/>
+  <packet name="NAV_SEARCH_DESC_REPLY" version="1"/>
+  <packet name="NAV_TOP_REGION_REQ" version="1"/>
+  <packet name="NAV_NEW_PASSWORD_REQ" version="1"/>
+  <packet name="NAV_ROUTE_REQ" version="2"/>
+  <packet name="NAV_CALLCENTER_LIST_REQ" version="1"/>
+  <packet name="NAV_LATEST_NEWS_REQ" version="1"/>
+  <packet name="NAV_CATEGORIES_REQ" version="1"/>
+  <packet name="NAV_COMBINED_SEARCH_REQ" version="2"/>
+  <packet name="NAV_SERVER_LIST_REQ" version="1"/>
+  <packet name="NAV_SEARCH_REQ" version="1"/>
+  <packet name="NAV_UPGRADE_REQ" version="2"/>
+  <packet name="NAV_VECTOR_MAP_REQ" version="1"/>
+  <packet name="NAV_TUNNEL_DATA_REQ" version="1"/>
+  <packet name="NAV_SERVER_INFO_REQ" version="4"/>
+  <packet name="NAV_INFO_REPLY" version="1"/>
+  <packet name="NAV_SEARCH_DESC_REQ" version="1"/>
+  <packet name="NAV_TRACK_REQ" version="1"/>
+  <packet name="NAV_MAP_REQ" version="1"/>
+  <packet name="NAV_INFO_REQ" version="1"/>
+  <packet name="NAV_WHOAMI_REQ" version="1"/>
+  <packet name="NAV_MULTI_VECTOR_MAP_REQ" version="1"/>
+  <packet name="NAV_FAV_REQ" version="2"/>
+  <packet name="NAV_LOCAL_CATEGORY_TREE_REQ" version="1"/>
+  <packet name="NAV_COMBINED_SEARCH_REPLY" version="2"/>
+  <packet name="NAV_TRACK_REPLY" version="1"/>
+  <packet name="NAV_VECTOR_MAP_REPLY" version="1"/>
+  <packet name="NAV_SERVER_INFO_REPLY" version="4"/>
+  <packet name="NAV_WHOAMI_REPLY" version="1"/>
+  <packet name="NAV_MESSAGE_REPLY" version="1"/>
+  <packet name="NAV_MULTI_VECTOR_MAP_REPLY" version="1"/>
+  <packet name="NAV_NOP_REPLY" version="1"/>
+  <packet name="NAV_MAP_REPLY" version="1"/>
+  <packet name="NAV_SEARCH_REPLY" version="1"/>
+  <packet name="NAV_TOP_REGION_REPLY" version="1"/>
+  <packet name="NAV_REV_GEOCODING_REPLY" version="1"/>
+  <packet name="NAV_UPGRADE_REPLY" version="2"/>
+  <packet name="NAV_FAV_REPLY" version="3"/>
+  <packet name="NAV_NEW_PASSWORD_REPLY" version="1"/>
+  <packet name="NAV_CATEGORIES_REPLY" version="2"/>
+  <packet name="NAV_LATEST_NEWS_REPLY" version="1"/>
+  <packet name="NAV_ROUTE_REPLY" version="2"/>
+  <packet name="NAV_SERVER_LIST_REPLY" version="1"/>
+  <packet name="NAV_CALLCENTER_LIST_REPLY" version="1"/>
+  <packet name="NAV_TUNNEL_DATA_REPLY" version="1"/>
+  <packet name="NAV_LOCAL_CATEGORY_TREE_REPLY" version="1"/>
+</allowedPackets>

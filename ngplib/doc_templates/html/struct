@@ -1,0 +1,18 @@
+{# make anchor for arrays too #}
+<a id="{{ struct.name }}[]"></a>
+<h2 id="{{ struct.name }}">{{ struct.name }} (struct)</h2>
+{% for enum in struct.enums.values() %}
+{% include "enum" %}
+{% endfor %}
+<table border="1">
+<tr>
+<th>Type</h>
+<th>Name</th>
+<th>Size</th>
+<th>Comment</th>
+</tr>
+{% for member in struct.members %}
+{% include "member" %}<tr/>
+{% endfor %}
+</table>
+

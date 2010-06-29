@@ -1,0 +1,28 @@
+* Handle references to global parameters. Fixed, go through and find references.
+* Find out what to do with global parameters, ex. For instance, how does the
+  authentication process work?
+* PAL namespacing for primitive types.
+* NGP namespacing.
+  * Serializing.
+  * Create corresponding .cpp-files.
+  * Param 6000?!
+* Combined search param id mess
+* Param 1209?!
+* Multiple params may be sent?! (search for 5200 trackpoints)
+
+
+         // template <typename T>
+         // explicit RequestTypeEnum( T t ):m_t(enum_t(t)) {}
+         // operator enum_t() { return m_t; }
+         // enum_t m_t;
+
+
+
+
+
+
+
+
+
+
+

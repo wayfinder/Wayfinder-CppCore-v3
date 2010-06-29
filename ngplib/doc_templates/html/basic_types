@@ -1,0 +1,47 @@
+<a id="string"></a>
+<a id="string[]"></a>
+<a id="uint32"></a>
+<a id="uint32[]"></a>
+<a id="int32"></a>
+<a id="int32[]"></a>
+<a id="int16"></a>
+<a id="int16[]"></a>
+<a id="uint16"></a>
+<a id="uint16[]"></a>
+<a id="int8"></a>
+<a id="int8[]"></a>
+<a id="uint8"></a>
+<a id="uint8[]"></a>
+<a id="byte"></a>
+<a id="byte[]"></a>
+<h1>Basic types</h1>
+<table border="1">
+<tr>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+<tr>
+<td>string</td><td>A standard STL string.</td>
+</tr>
+<tr>
+<td>uint32</td><td>32 bits unsigned integer</td>
+</tr>
+<tr>
+<td>int32</td><td>32 bits signed integer</td>
+</tr>
+<tr>
+<td>uint16</td><td>16 bits unsigned integer</td>
+</tr>
+<tr>
+<td>int16</td><td>16 bits signed integer</td>
+</tr>
+<tr>
+<td>uint8</td><td>8 bits unsigned integer</td>
+</tr>
+<tr>
+<td>int8</td><td>8 bits signed integer</td>
+</tr>
+<tr>
+<td>byte</td><td>8 bits unsigned integer</td>
+</tr>
+</table>

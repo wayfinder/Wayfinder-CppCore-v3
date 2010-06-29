@@ -1,0 +1,6 @@
+<tr>
+<td><a href="#{{ member.type }}">{{ member.type }}</a></td>
+<td>{{ member.name }}</td>
+<td>{{ member.size }}</td>
+<td>{{ member.comment }}</td>
+</tr>

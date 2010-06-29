@@ -1,0 +1,26 @@
+This document describes the structure of the internal observer/interfaces
+within CV3.
+
+Interfaces that could be derived by any module, e.g LocationModuleObserver is
+located in Modules/include. 
+
+Module specific interfaces (interfaces that are derived by a specific module)
+are located in the modules interface folder, e.g in LocationModule/interface,
+the LocationProvider interface can be found. LocationModule derives from this
+interface and no other module should be able to do that.
+
+The module specific interfaces are meant to give a specific view/interface of a
+module. Instead of returning the LocationModule, which then would open up for
+use of any public function in LocationModule, we return a derived interface to
+the module.
+
+CoreMain has some specific interfaces in CoreMain/interface. These are:
+- ModuleDataInterfaceProvider.h
+- ModuleObserverInterfaceProvider.h
+
+These interfaces should be derived by the main class for CV3, all modules will
+then be able to get access to other modules (interfaces) through the derived
+functions in the above provider interfaces. E.g ModuleObserverInterfaceProvider
+contains one function for returning the ModuleObserverInterface which is
+actually a specific derived module like the LocationModule (used when
+registering a module as an observer to the LocationModule).
